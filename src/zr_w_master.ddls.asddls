@@ -45,7 +45,7 @@ define root view entity ZR_W_MASTER
       _Object,
       _Transport,
       
-      /* value help — expose Description/Criticality ที่ชั้น projection (YC_*) */
+      /* value help — expose Description/Criticality ที่ชั้น projection (ZC_*) */
       _OverallStatusVH,
       _WricefTypeVH,
       _DeliveryTypeVH

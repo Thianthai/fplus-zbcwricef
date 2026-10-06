@@ -36,7 +36,7 @@ define view entity ZI_W_TRANSPORT
       /* composition parent — ใช้โดย RAP สำหรับ lock/ETag/root determination */
       _WricefMaster,
       
-      /* value help — expose Description/Criticality ที่ชั้น projection (YC_*) */
+      /* value help — expose Description/Criticality ที่ชั้น projection (ZC_*) */
       _TransportTypeVH,
       _TransportStatusVH
 }

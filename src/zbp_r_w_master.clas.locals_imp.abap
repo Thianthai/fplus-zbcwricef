@@ -76,7 +76,7 @@ CLASS lhc_WricefMaster IMPLEMENTATION.
 
   METHOD validateWricefId.
 
-    " ดึงค่า RicefwID ปัจจุบันของแต่ละตัวออกมาเก็บใน lt_ricefw_master
+    " ดึงค่า WricefID ปัจจุบันของแต่ละตัวออกมาเก็บใน lt_wricef_master
     READ ENTITIES OF zr_w_master IN LOCAL MODE
       ENTITY WricefMaster
         FIELDS ( WricefID )

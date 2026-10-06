@@ -50,7 +50,7 @@ etag master LocalLastChangedAt    //เป็น ETag ระดับ instance �
     //RAP อยากให้ validation แสดง error แบบ real-time ตอน user ยังพิมพ์อยู่ (ก่อนกด Activate จริง) ผ่าน draft action Prepare
     validation validateWricefId;       //ของ root ไม่ต้องใส่ prefix เพราะอยู่ block เดียวกันอยู่แล้ว
     validation validateDates;          //ของ root ไม่ต้องใส่ prefix เพราะอยู่ block เดียวกันอยู่แล้ว
-    validation Owner~validateProgress; //ของ child ่ต้องใส่ prefix คือ alias ของ child entity ที่ประกาศไว้
+    validation Owner~validateProgress; //ของ child ต้องใส่ prefix คือ alias ของ child entity ที่ประกาศไว้
   }
 
   association _Owner     { create; with draft; }
@@ -61,8 +61,8 @@ etag master LocalLastChangedAt    //เป็น ETag ระดับ instance �
 define behavior for ZI_W_OWNER alias Owner
 persistent table ztbc_w_owner
 draft table ztbc_w_owner_d
-lock dependent by _WricefMaster          //บอกว่า child ไม่ได้ถือ lock เอง แต่ยืม lock จาก root ผ่าน association _RicefwMaster
-authorization dependent by _WricefMaster //บอกว่า child ไม่มีสิทธิ์ของตัวเอง แต่ยืมสิทธิ์จาก root ผ่าน association _RicefwMaster
+lock dependent by _WricefMaster          //บอกว่า child ไม่ได้ถือ lock เอง แต่ยืม lock จาก root ผ่าน association _WricefMaster
+authorization dependent by _WricefMaster //บอกว่า child ไม่มีสิทธิ์ของตัวเอง แต่ยืมสิทธิ์จาก root ผ่าน association _WricefMaster
 etag master LocalLastChangedAt
 {
   mapping for ztbc_w_owner corresponding
@@ -94,8 +94,8 @@ etag master LocalLastChangedAt
 define behavior for ZI_W_OBJECT alias Object
 persistent table ztbc_w_object
 draft table ztbc_w_object_d
-lock dependent by _WricefMaster          //บอกว่า child ไม่ได้ถือ lock เอง แต่ยืม lock จาก root ผ่าน association _RicefwMaster
-authorization dependent by _WricefMaster //บอกว่า child ไม่มีสิทธิ์ของตัวเอง แต่ยืมสิทธิ์จาก root ผ่าน association _RicefwMaster
+lock dependent by _WricefMaster          //บอกว่า child ไม่ได้ถือ lock เอง แต่ยืม lock จาก root ผ่าน association _WricefMaster
+authorization dependent by _WricefMaster //บอกว่า child ไม่มีสิทธิ์ของตัวเอง แต่ยืมสิทธิ์จาก root ผ่าน association _WricefMaster
 etag master LocalLastChangedAt
 {
   mapping for ztbc_w_object corresponding
@@ -125,8 +125,8 @@ etag master LocalLastChangedAt
 define behavior for ZI_W_TRANSPORT alias Transport
 persistent table ztbc_w_transport
 draft table ztbc_w_transp_d
-lock dependent by _WricefMaster          //บอกว่า child ไม่ได้ถือ lock เอง แต่ยืม lock จาก root ผ่าน association _RicefwMaster
-authorization dependent by _WricefMaster //บอกว่า child ไม่มีสิทธิ์ของตัวเอง แต่ยืมสิทธิ์จาก root ผ่าน association _RicefwMaster
+lock dependent by _WricefMaster          //บอกว่า child ไม่ได้ถือ lock เอง แต่ยืม lock จาก root ผ่าน association _WricefMaster
+authorization dependent by _WricefMaster //บอกว่า child ไม่มีสิทธิ์ของตัวเอง แต่ยืมสิทธิ์จาก root ผ่าน association _WricefMaster
 etag master LocalLastChangedAt
 {
   mapping for ztbc_w_transport corresponding

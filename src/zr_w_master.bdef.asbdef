@@ -1,0 +1,157 @@
+managed implementation in class zbp_r_w_master unique;
+strict ( 2 );
+with draft;
+
+define behavior for ZR_W_MASTER alias WricefMaster
+persistent table ztbc_w_master    //บอกว่าข้อมูลจริง (active data — ที่ save แล้วถาวร) เก็บอยู่ใน table ไหน ตอน RAP ทำ CRUD (create/read/update/delete)
+draft table ztbc_w_master_d       //บอกว่า draft (ข้อมูลที่ user แก้ค้างไว้ ยังไม่กด save) เก็บที่ table ไหน
+lock master                       //บอกว่า entity นี้เป็นเจ้าของ lock ของทั้ง composition tree — ทั้ง record นั้นและ child ทั้งหมด (owner/object/transport) จะถูกล็อกไปด้วยกัน คนอื่นแก้ตัวไหนใน tree เดียวกันไม่ได้จนกว่าจะปล่อย
+total etag LastChangedAt          //ETag คือกลไกกัน "แก้ทับกันโดยไม่รู้ตัว" (optimistic concurrency control) — ถ้า child ถูกแก้ ค่า LastChangedAt ที่ root จะขยับตามด้วย ทำให้ตรวจจับความขัดแย้งได้แม้จะแก้กันคนละจุดใน tree เดียวกัน
+authorization master ( instance ) //บอกว่า entity นี้เป็นจุดที่ เช็คสิทธิ์ ของทั้ง tree — ( instance ) หมายถึงเช็คสิทธิ์เป็นรายตัว (record นี้แก้ได้ไหม)
+etag master LocalLastChangedAt    //เป็น ETag ระดับ instance เดียว (แค่ record นี้เอง ไม่รวม tree) — ใช้ตรวจว่า record ตัวนี้เองถูกแก้ไปหรือยัง
+{
+  mapping for ztbc_w_master corresponding
+  {
+    WricefUUID         = wricef_uuid;
+    WricefID           = wricef_id;
+    WricefType         = wricef_type;
+    DeliveryType       = delivery_type;
+    Description        = description;
+    OverallStatus      = overall_status;
+    PlanStart          = plan_start;
+    PlanFinish         = plan_finish;
+    Remark             = remark;
+    CreatedBy          = created_by;
+    CreatedAt          = created_at;
+    LastChangedBy      = last_changed_by;
+    LastChangedAt      = last_changed_at;
+    LocalLastChangedAt = local_last_changed_at;
+  }
+
+  field ( numbering : managed, readonly ) WricefUUID;
+  field ( mandatory ) WricefID, WricefType, DeliveryType, Description;
+  field ( readonly ) CreatedBy, CreatedAt, LastChangedBy, LastChangedAt, LocalLastChangedAt;
+
+  create;
+  update;
+  delete;
+  determination setInitialStatus on modify { create; } //Initial status
+  validation validateWricefId on save { create; update; field WricefID; } //Check not empty/not dup
+  validation validateDates on save { create; update; field PlanStart, PlanFinish; }
+  action changeStatus parameter ZA_W_STATUS result [1] $self;
+  action changePlanFinish parameter ZA_W_PLAN_FINISH result [1] $self;
+
+  draft action Activate optimized;
+  draft action Discard;
+  draft action Edit;
+  draft action Resume;
+  draft determine action Prepare
+  {
+    //RAP อยากให้ validation แสดง error แบบ real-time ตอน user ยังพิมพ์อยู่ (ก่อนกด Activate จริง) ผ่าน draft action Prepare
+    validation validateWricefId;       //ของ root ไม่ต้องใส่ prefix เพราะอยู่ block เดียวกันอยู่แล้ว
+    validation validateDates;          //ของ root ไม่ต้องใส่ prefix เพราะอยู่ block เดียวกันอยู่แล้ว
+    validation Owner~validateProgress; //ของ child ่ต้องใส่ prefix คือ alias ของ child entity ที่ประกาศไว้
+  }
+
+  association _Owner     { create; with draft; }
+  association _Object    { create; with draft; }
+  association _Transport { create; with draft; }
+}
+
+define behavior for ZI_W_OWNER alias Owner
+persistent table ztbc_w_owner
+draft table ztbc_w_owner_d
+lock dependent by _WricefMaster          //บอกว่า child ไม่ได้ถือ lock เอง แต่ยืม lock จาก root ผ่าน association _RicefwMaster
+authorization dependent by _WricefMaster //บอกว่า child ไม่มีสิทธิ์ของตัวเอง แต่ยืมสิทธิ์จาก root ผ่าน association _RicefwMaster
+etag master LocalLastChangedAt
+{
+  mapping for ztbc_w_owner corresponding
+  {
+    OwnerUUID          = owner_uuid;
+    WricefUUID         = wricef_uuid;
+    OwnerID            = owner_id;
+    OwnerName          = owner_name;
+    Role               = role;
+    Progress           = progress;
+    CreatedBy          = created_by;
+    CreatedAt          = created_at;
+    LastChangedBy      = last_changed_by;
+    LocalLastChangedAt = local_last_changed_at;
+  }
+
+  field ( numbering : managed, readonly ) OwnerUUID;
+  field ( readonly ) WricefUUID;
+  field ( mandatory ) OwnerID, OwnerName, Role;
+  field ( readonly ) CreatedBy, CreatedAt, LastChangedBy, LocalLastChangedAt;
+
+  update;
+  delete;
+  validation validateProgress on save { create; update; field Progress; }
+
+  association _WricefMaster { with draft; }
+}
+
+define behavior for ZI_W_OBJECT alias Object
+persistent table ztbc_w_object
+draft table ztbc_w_object_d
+lock dependent by _WricefMaster          //บอกว่า child ไม่ได้ถือ lock เอง แต่ยืม lock จาก root ผ่าน association _RicefwMaster
+authorization dependent by _WricefMaster //บอกว่า child ไม่มีสิทธิ์ของตัวเอง แต่ยืมสิทธิ์จาก root ผ่าน association _RicefwMaster
+etag master LocalLastChangedAt
+{
+  mapping for ztbc_w_object corresponding
+  {
+    ObjectUUID         = object_uuid;
+    WricefUUID         = wricef_uuid;
+    ObjectName         = object_name;
+    ObjectType         = object_type;
+    Description        = description;
+    CreatedBy          = created_by;
+    CreatedAt          = created_at;
+    LastChangedBy      = last_changed_by;
+    LocalLastChangedAt = local_last_changed_at;
+  }
+
+  field ( numbering : managed, readonly ) ObjectUUID;
+  field ( readonly ) WricefUUID;
+  field ( mandatory ) ObjectName, ObjectType;
+  field ( readonly ) CreatedBy, CreatedAt, LastChangedBy, LocalLastChangedAt;
+
+  update;
+  delete;
+
+  association _WricefMaster { with draft; }
+}
+
+define behavior for ZI_W_TRANSPORT alias Transport
+persistent table ztbc_w_transport
+draft table ztbc_w_transp_d
+lock dependent by _WricefMaster          //บอกว่า child ไม่ได้ถือ lock เอง แต่ยืม lock จาก root ผ่าน association _RicefwMaster
+authorization dependent by _WricefMaster //บอกว่า child ไม่มีสิทธิ์ของตัวเอง แต่ยืมสิทธิ์จาก root ผ่าน association _RicefwMaster
+etag master LocalLastChangedAt
+{
+  mapping for ztbc_w_transport corresponding
+  {
+    TransportUUID      = transport_uuid;
+    WricefUUID         = wricef_uuid;
+    TransportType      = transport_type;
+    TransportNumber    = transport_number;
+    Description        = description;
+    TransportStatus    = transport_status;
+    ImportSequence     = import_sequence;
+    ReleasedOn         = released_on;
+    CreatedBy          = created_by;
+    CreatedAt          = created_at;
+    LastChangedBy      = last_changed_by;
+    LocalLastChangedAt = local_last_changed_at;
+  }
+
+  field ( numbering : managed, readonly ) TransportUUID;
+  field ( readonly ) WricefUUID;
+  field ( mandatory ) TransportType, TransportNumber, TransportStatus;
+  field ( readonly ) CreatedBy, CreatedAt, LastChangedBy, LocalLastChangedAt;
+
+  update;
+  delete;
+
+  association _WricefMaster { with draft; }
+}

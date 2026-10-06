@@ -1,0 +1,9 @@
+CLASS zbp_r_w_master DEFINITION PUBLIC ABSTRACT FINAL FOR BEHAVIOR OF zr_w_master.
+protected section.
+private section.
+ENDCLASS.
+
+
+
+CLASS ZBP_R_W_MASTER IMPLEMENTATION.
+ENDCLASS.

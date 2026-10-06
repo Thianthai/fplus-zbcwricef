@@ -1,0 +1,125 @@
+@Metadata.layer: #CORE
+
+@UI: {
+  headerInfo: {
+    typeName:       'WRICEF Item',
+    typeNamePlural: 'WRICEF Items',
+    title:       { type: #STANDARD, value: 'WricefID' },
+    description: { type: #STANDARD, value: 'Description' }
+  },
+  presentationVariant: [{ sortOrder: [{ by: 'WricefID', direction: #ASC }] }]
+}
+annotate entity ZC_W_MASTER with
+{
+  @UI.facet: [
+    /* tab เดียว ครอบ 3 section ข้างล่าง */
+    { id: 'GeneralTab', purpose: #STANDARD, type: #COLLECTION,
+      label: 'General Information', position: 10 },
+
+    { id: 'GeneralInfo', parentId: 'GeneralTab', purpose: #STANDARD,
+      type: #IDENTIFICATION_REFERENCE,
+      label: 'General Information', position: 10 },
+
+    { id: 'Schedule', parentId: 'GeneralTab', purpose: #STANDARD,
+      type: #FIELDGROUP_REFERENCE,
+      label: 'Schedule', position: 20, targetQualifier: 'Schedule' },
+
+    { id: 'AdminData', parentId: 'GeneralTab', purpose: #STANDARD,
+      type: #FIELDGROUP_REFERENCE,
+      label: 'Administrative Data', position: 30, targetQualifier: 'AdminData' },
+
+    /* tab ของ child แต่ละตัว */
+    { id: 'OwnerFacet', purpose: #STANDARD, type: #LINEITEM_REFERENCE,
+      label: 'Owners', position: 20, targetElement: '_Owner' },
+
+    { id: 'ObjectFacet', purpose: #STANDARD, type: #LINEITEM_REFERENCE,
+      label: 'Technical Objects', position: 30, targetElement: '_Object' },
+
+    { id: 'TransportFacet', purpose: #STANDARD, type: #LINEITEM_REFERENCE,
+      label: 'Transports', position: 40, targetElement: '_Transport' }
+  ]
+
+  @UI.hidden: true
+  WricefUUID;
+
+  @UI: {
+    lineItem:       [{ position: 10, importance: #HIGH },
+                     { type: #FOR_ACTION, dataAction: 'changeStatus', label: 'Change Status' },
+                     { type: #FOR_ACTION, dataAction: 'changePlanFinish', label: 'Change Planned Finish' }],
+    identification: [{ position: 10 },
+                     { type: #FOR_ACTION, dataAction: 'changeStatus', label: 'Change Status' },
+                     { type: #FOR_ACTION, dataAction: 'changePlanFinish', label: 'Change Planned Finish' }],
+    selectionField: [{ position: 10 }]
+  }
+  WricefID;
+
+  @UI: {
+    lineItem:       [{ position: 20, importance: #HIGH }],
+    identification: [{ position: 20 }],
+    selectionField: [{ position: 20 }]
+  }
+  WricefType;
+
+  @UI.hidden: true
+  WricefTypeText;
+  
+  @UI: {
+    lineItem:       [{ position: 30, importance: #MEDIUM }],
+    identification: [{ position: 30 }],
+    selectionField: [{ position: 30 }]
+  }
+  DeliveryType;
+
+  @UI.hidden: true
+  DeliveryTypeText;
+  
+  @UI: {
+    lineItem:       [{ position: 40, importance: #HIGH }],
+    identification: [{ position: 40 }]
+  }
+  Description;
+
+  @UI: {
+    lineItem:       [{ position: 50, importance: #HIGH, criticality: 'OverallStatusCriticality' }],
+    identification: [{ position: 50, criticality: 'OverallStatusCriticality' }],
+    selectionField: [{ position: 40 }]
+  }
+  OverallStatus;
+
+  @UI.hidden: true
+  OverallStatusText;
+
+  @UI.hidden: true
+  OverallStatusCriticality;
+  
+  @UI: {
+    lineItem:  [{ position: 60, importance: #MEDIUM }],
+    fieldGroup: [{ qualifier: 'Schedule', position: 10 }]
+  }
+  PlanStart;
+
+  @UI: {
+    lineItem:  [{ position: 70, importance: #MEDIUM }],
+    fieldGroup: [{ qualifier: 'Schedule', position: 20 }]
+  }
+  PlanFinish;
+
+  @UI.fieldGroup: [{ qualifier: 'Schedule', position: 30 }]
+  @UI.multiLineText: true
+  Remark;
+
+  @UI.fieldGroup: [{ qualifier: 'AdminData', position: 10 }]
+  CreatedBy;
+
+  @UI.fieldGroup: [{ qualifier: 'AdminData', position: 20 }]
+  CreatedAt;
+
+  @UI.fieldGroup: [{ qualifier: 'AdminData', position: 30 }]
+  LastChangedBy;
+
+  @UI.hidden: true
+  LastChangedAt;
+
+  @UI.hidden: true
+  LocalLastChangedAt;
+}

@@ -29,7 +29,9 @@ etag master LocalLastChangedAt    //เป็น ETag ระดับ instance �
   }
 
   field ( numbering : managed, readonly ) WricefUUID;
-  field ( mandatory ) WricefID, WricefType, DeliveryType, Description;
+  //WricefType, DeliveryType, Description ไม่บังคับ
+  //เพราะ record ที่สร้างจากปุ่ม Get WRICEF มีแค่ WricefID ให้ user กรอกที่เหลือเอง
+  field ( mandatory ) WricefID;
   field ( readonly ) CreatedBy, CreatedAt, LastChangedBy, LastChangedAt, LocalLastChangedAt;
 
   create;
@@ -40,6 +42,10 @@ etag master LocalLastChangedAt    //เป็น ETag ระดับ instance �
   validation validateDates on save { create; update; field PlanStart, PlanFinish; }
   action changeStatus parameter ZA_W_STATUS result [1] $self;
   action changePlanFinish parameter ZA_W_PLAN_FINISH result [1] $self;
+  //ปุ่ม Get WRICEF บน List Report: อ่าน TR แล้วสร้าง WRICEF ที่ยังไม่มี
+  //static = ไม่ผูกกับ record ใด ไม่ต้องเลือกแถวก่อนกด
+  //authorization : none = ไม่เช็คสิทธิ์ (ตามที่ตกลงให้อนุญาตทุกอย่าง)
+  static action ( authorization : none ) getWricef;
 
   draft action Activate optimized;
   draft action Discard;

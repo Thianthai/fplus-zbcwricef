@@ -32,6 +32,24 @@
      <MSGNR>004</MSGNR>
      <TEXT>Progress must not exceed 100</TEXT>
     </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZBCWRICEF</ARBGB>
+     <MSGNR>005</MSGNR>
+     <TEXT>&amp;1 WRICEF created from transport requests, &amp;2 already exist</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZBCWRICEF</ARBGB>
+     <MSGNR>006</MSGNR>
+     <TEXT>No new WRICEF found in transport requests</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZBCWRICEF</ARBGB>
+     <MSGNR>007</MSGNR>
+     <TEXT>Transport requests could not be read</TEXT>
+    </T100>
    </T100>
   </asx:values>
  </asx:abap>

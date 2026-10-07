@@ -55,6 +55,11 @@ CLASS lhc_WricefMaster DEFINITION INHERITING FROM cl_abap_behavior_handler.
     METHODS changeplanfinish FOR MODIFY
       keys FOR ACTION wricefmaster~changeplanfinish RESULT result.
 
+    "! Static action ของปุ่ม Get WRICEF
+    "! อ่าน TR ทั้งหมดผ่าน ZCL_W_TR_READER แล้วสร้าง WRICEF เฉพาะรหัสที่ยังไม่มีใน ZTBC_W_MASTER
+    METHODS getwricef FOR MODIFY
+      keys FOR ACTION wricefmaster~getwricef.
+
 ENDCLASS.
 
 CLASS lhc_WricefMaster IMPLEMENTATION.
@@ -213,6 +218,67 @@ CLASS lhc_WricefMaster IMPLEMENTATION.
     result = VALUE #( FOR ls_wricef IN lt_wricef
                     ( %tky   = ls_wricef-%tky
                       %param = ls_wricef ) ).
+
+  ENDMETHOD.
+
+  METHOD getWricef.
+
+    DATA lt_new_id TYPE zcl_w_tr_reader=>tt_wricef_id.
+
+    " อ่าน TR ทั้งหมดแล้วแยกรหัส WRICEF ผ่าน class helper
+    TRY.
+        DATA(lt_wricef_id) = NEW zcl_w_tr_reader( )->get_wricef_ids( ).
+      CATCH cx_xco_runtime_exception.
+        APPEND new_message( id       = 'ZBCWRICEF'
+                            number   = '007'
+                            severity = if_abap_behv_message=>severity-error ) TO reported-%other.
+        RETURN.
+    ENDTRY.
+
+    " เช็คกับ active data ว่ารหัสไหนมีอยู่แล้ว
+    " เหลือเฉพาะรหัสที่ยังไม่มีไว้ใน lt_new_id
+    IF lt_wricef_id IS NOT INITIAL.
+      SELECT wricef_id
+        FROM ztbc_w_master
+        FOR ALL ENTRIES IN @lt_wricef_id
+        WHERE wricef_id = @lt_wricef_id-table_line
+        INTO TABLE @DATA(lt_existing_id).
+
+      LOOP AT lt_wricef_id INTO DATA(lv_wricef_id).
+        IF NOT line_exists( lt_existing_id[ wricef_id = lv_wricef_id ] ).
+          INSERT lv_wricef_id INTO TABLE lt_new_id.
+        ENDIF.
+      ENDLOOP.
+    ENDIF.
+
+    IF lt_new_id IS INITIAL.
+      APPEND new_message( id       = 'ZBCWRICEF'
+                          number   = '006'
+                          severity = if_abap_behv_message=>severity-information ) TO reported-%other.
+      RETURN.
+    ENDIF.
+
+    " สร้างเป็น active instance ตรง ๆ ไม่ผ่าน draft
+    " ใส่แค่ WricefID ส่วน OverallStatus ได้จาก determination setInitialStatus
+    " %cid ใช้รหัส WRICEF ได้เลย เพราะใน lt_new_id ไม่มีรหัสซ้ำ
+    MODIFY ENTITIES OF zr_w_master IN LOCAL MODE
+      ENTITY WricefMaster
+        CREATE FIELDS ( WricefID )
+        WITH VALUE #( FOR lv_new_id IN lt_new_id
+                      ( %cid      = lv_new_id
+                        %is_draft = if_abap_behv=>mk-off
+                        WricefID  = lv_new_id ) )
+      FAILED   failed
+      REPORTED reported.
+
+    DATA(lv_created_count)  = lines( lt_new_id ).
+    DATA(lv_existing_count) = lines( lt_wricef_id ) - lv_created_count.
+
+    APPEND new_message( id       = 'ZBCWRICEF'
+                        number   = '005'
+                        severity = if_abap_behv_message=>severity-success
+                        v1       = lv_created_count
+                        v2       = lv_existing_count ) TO reported-%other.
 
   ENDMETHOD.
 

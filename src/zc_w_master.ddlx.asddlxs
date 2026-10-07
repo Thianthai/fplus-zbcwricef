@@ -65,6 +65,18 @@ annotate entity ZC_W_MASTER with
   @UI.hidden: true
   WricefTypeText;
   
+  
+  @UI: {
+    lineItem: [{ position: 40, importance: #HIGH }]
+  }
+  AbapOwnerName;
+
+  @UI.dataPoint: { title: 'Progress', visualization: #PROGRESS, targetValue: 100 }
+  @UI: {
+    lineItem: [{ position: 50, importance: #MEDIUM, type: #AS_DATAPOINT }]
+  }
+  AbapOwnerProgress;
+  
   /* ไม่มี lineItem -> ไม่แสดงในตารางของ List Report
      ยังค้นหาได้จาก filter และเพิ่มคอลัมน์กลับได้ผ่าน View Settings */
   @UI: {

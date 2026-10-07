@@ -17,6 +17,10 @@ define root view entity ZR_W_MASTER
 
   association [0..1] to ZI_W_DTYPE_VH as _DeliveryTypeVH
     on $projection.DeliveryType = _DeliveryTypeVH.DeliveryType
+    
+  /* owner role AB ที่ถูกเลือก ใช้แสดง Owner และ Progress ใน List Report */
+  association [0..1] to ZI_W_ABAP_OWNER as _AbapOwner
+    on $projection.WricefUUID = _AbapOwner.WricefUUID
 {
   key wricef_uuid           as WricefUUID,
 
@@ -48,5 +52,8 @@ define root view entity ZR_W_MASTER
       /* value help — expose Description/Criticality ที่ชั้น projection (ZC_*) */
       _OverallStatusVH,
       _WricefTypeVH,
-      _DeliveryTypeVH
+      _DeliveryTypeVH,
+
+      /* owner role AB สำหรับ List Report */
+      _AbapOwner
 }

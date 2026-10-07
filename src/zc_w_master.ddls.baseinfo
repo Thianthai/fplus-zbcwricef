@@ -3,6 +3,7 @@
 {
 "FROM":
 [
+"ZI_W_ABAP_OWNER",
 "ZI_W_DTYPE_VH",
 "ZI_W_OSTAT_VH",
 "ZI_W_TYPE_VH",

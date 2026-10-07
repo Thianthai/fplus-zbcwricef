@@ -20,6 +20,12 @@ define root view entity ZC_W_MASTER
       @Semantics.text: true
       _WricefTypeVH.Description as WricefTypeText,
 
+      @EndUserText.label: 'Owner'
+      _AbapOwner.OwnerDisplayName as AbapOwnerName,
+
+      @EndUserText.label: 'Progress'
+      _AbapOwner.Progress         as AbapOwnerProgress,
+      
       @Consumption.valueHelpDefinition: [{ entity: { name: 'ZI_W_DTYPE_VH', element: 'DeliveryType' } }]
       @ObjectModel.text.element: [ 'DeliveryTypeText' ]
       @UI.textArrangement: #TEXT_ONLY //#TEXT_ONLY = "Description Text" #TEXT_FIRST = "Description Text (Key)"

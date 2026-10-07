@@ -1,5 +1,14 @@
 # Review Log — ZBCWRICEF
 
+## รอบที่ 14 — 2026-10-07 · คอลัมน์ Owner / Progress (commit `e389fa5`)
+
+- view ใหม่ 3 ตัวตรงกับที่ส่งให้ทุกบรรทัด: `ZI_W_ABAP_OWNER_FIRST`, `ZI_W_ABAP_OWNER_KEY`, `ZI_W_ABAP_OWNER` · description ตรง
+- `ZR_W_MASTER` เพิ่ม association `_AbapOwner` · `ZC_W_MASTER` เพิ่ม `AbapOwnerName` / `AbapOwnerProgress` · DDLX lineItem 40 / 50 + dataPoint
+- `.baseinfo` ของ `ZR_W_MASTER` / `ZC_W_MASTER` เปลี่ยนตาม dependency ใหม่ (SAP สร้างเอง ปกติ)
+- grep `ricefw` ทุก case: ไม่พบ · ไม่มีไฟล์อื่นเปลี่ยน
+- ⏳ รอผลทดสอบใน Preview (ดู [feature-list-owner-progress.md](feature-list-owner-progress.md))
+- **ผลรวม: ผ่าน**
+
 ## รอบที่ 13 — 2026-10-07 · List Report columns + WRICEF Type W/R/I/C/E/F (commit `d41dac8`)
 
 - source 4 ไฟล์ตรงกับที่ส่งให้: DDLX `ZC_W_MASTER`, `ZCL_W_VH_GEN`, BDEF `ZR_W_MASTER`, `ZBP_R_W_MASTER` (ต่างแค่บรรทัดว่าง)

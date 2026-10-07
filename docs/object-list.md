@@ -1,6 +1,6 @@
 # Object List — ZBCWRICEF
 
-สถานะอ้างอิงจาก repo (ที่ผู้ใช้ push จาก ADT) · อัปเดตล่าสุด 2026-10-07 (commit `d41dac8`)
+สถานะอ้างอิงจาก repo (ที่ผู้ใช้ push จาก ADT) · อัปเดตล่าสุด 2026-10-07 (commit `e389fa5`)
 
 สัญลักษณ์: ✅ อยู่บน repo แล้ว · ⏳ ยังไม่สร้าง
 
@@ -44,6 +44,9 @@
 | `ZC_W_OWNER` / `ZC_W_OBJECT` / `ZC_W_TRANSPORT` | Projection (child) | | ✅ |
 | `ZC_W_MASTER` / `ZC_W_OWNER` / `ZC_W_OBJECT` / `ZC_W_TRANSPORT` | Metadata extension | UI annotation | ✅ |
 | `ZI_W_TYPE_VH` · `ZI_W_DTYPE_VH` · `ZI_W_OSTAT_VH` · `ZI_W_OTYPE_VH` · `ZI_W_ROLE_VH` · `ZI_W_TTYPE_VH` · `ZI_W_TSTAT_VH` | Value help | | ✅ |
+| `ZI_W_ABAP_OWNER_FIRST` | CDS view entity | `min( created_at )` ของ owner role AB ต่อ WRICEF | ✅ |
+| `ZI_W_ABAP_OWNER_KEY` | CDS view entity | เลือก owner AB หนึ่งคนต่อ WRICEF (`owner_id` น้อยสุดเมื่อเวลาเท่ากัน) | ✅ |
+| `ZI_W_ABAP_OWNER` | CDS view entity | ชื่อ owner AB (`I_BusinessUserBasic-PersonFullName` หรือ `owner_name`) + Progress สำหรับ List Report | ✅ |
 | `ZA_W_STATUS` | Abstract entity | parameter ของ `changeStatus` | ✅ |
 | `ZA_W_PLAN_FINISH` | Abstract entity | parameter ของ `changePlanFinish` | ✅ |
 

@@ -1,5 +1,12 @@
 # Review Log — ZBCWRICEF
 
+## รอบที่ 15 — 2026-10-07 · Change Description + Progress (%) (commit `0701429`)
+
+- source ตรงกับที่ส่งให้: `ZA_W_DESCRIPTION` (ใหม่), BDEF `ZR_W_MASTER` / `ZC_W_MASTER`, `ZBP_R_W_MASTER`, DDLX `ZC_W_MASTER` · message 010 ตรง
+- grep `ricefw` ทุก case: ไม่พบ · ไม่มีไฟล์อื่นเปลี่ยน
+- ผู้ใช้ทดสอบผ่านทุกข้อ ยกเว้น dialog ไม่มี Description เดิม -> OQ5 (ดู [feature-change-description.md](feature-change-description.md))
+- **ผลรวม: ผ่าน (มี OQ5 ค้าง)**
+
 ## รอบที่ 14 — 2026-10-07 · คอลัมน์ Owner / Progress (commit `e389fa5`)
 
 - view ใหม่ 3 ตัวตรงกับที่ส่งให้ทุกบรรทัด: `ZI_W_ABAP_OWNER_FIRST`, `ZI_W_ABAP_OWNER_KEY`, `ZI_W_ABAP_OWNER` · description ตรง

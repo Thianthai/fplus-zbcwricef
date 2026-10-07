@@ -44,12 +44,12 @@ annotate entity ZC_W_MASTER with
 
   @UI: {
     lineItem:       [{ position: 10, importance: #HIGH },
+                     { type: #FOR_ACTION, dataAction: 'changeDescription', label: 'Change Description',
+                       invocationGrouping: #CHANGE_SET },
                      { type: #FOR_ACTION, dataAction: 'changeStatus', label: 'Change Status' },
                      { type: #FOR_ACTION, dataAction: 'changePlanFinish', label: 'Change Planned Finish' },
                      { type: #FOR_ACTION, dataAction: 'getWricef', label: 'Get WRICEF' }],
     identification: [{ position: 10 },
-                     { type: #FOR_ACTION, dataAction: 'changeStatus', label: 'Change Status' },
-                     { type: #FOR_ACTION, dataAction: 'changePlanFinish', label: 'Change Planned Finish' },
                      { type: #FOR_ACTION, dataAction: 'getTransports', label: 'Get TR' }],
     selectionField: [{ position: 10 }]
   }
@@ -71,9 +71,8 @@ annotate entity ZC_W_MASTER with
   }
   AbapOwnerName;
 
-  @UI.dataPoint: { title: 'Progress', visualization: #PROGRESS, targetValue: 100 }
   @UI: {
-    lineItem: [{ position: 50, importance: #MEDIUM, type: #AS_DATAPOINT }]
+    lineItem: [{ position: 50, importance: #MEDIUM, label: 'Progress (%)' }]
   }
   AbapOwnerProgress;
   

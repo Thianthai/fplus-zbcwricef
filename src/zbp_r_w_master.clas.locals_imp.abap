@@ -54,6 +54,15 @@ CLASS lhc_WricefMaster DEFINITION INHERITING FROM cl_abap_behavior_handler.
     METHODS validatedates FOR VALIDATE ON SAVE
       keys FOR wricefmaster~validatedates.
 
+    "! Action ของปุ่ม Change Description บน List Report
+    "! แก้ได้ทีละแถว และไม่แก้ถ้า Description ใน dialog ว่าง
+    METHODS changedescription FOR MODIFY
+      keys FOR ACTION wricefmaster~changedescription RESULT result.
+
+    "! ใส่ Description เดิมไว้ใน dialog ของปุ่ม Change Description
+    METHODS getdefaultsforchangedesc FOR READ
+      keys FOR FUNCTION wricefmaster~getdefaultsforchangedesc RESULT result.
+
     METHODS changestatus FOR MODIFY
       keys FOR ACTION wricefmaster~changestatus RESULT result.
 
@@ -205,6 +214,63 @@ CLASS lhc_WricefMaster IMPLEMENTATION.
         APPEND VALUE #( %tky = ls_wricef_master-%tky ) TO failed-wricefmaster.
       ENDIF.
     ENDLOOP.
+
+  ENDMETHOD.
+
+  METHOD changeDescription.
+
+    " แก้ได้ทีละแถว
+    " เลือกเกิน 1 แถว -> แจ้ง error ครั้งเดียว และไม่แก้อะไรเลย
+    IF lines( keys ) > 1.
+      APPEND new_message( id       = 'ZBCWRICEF'
+                          number   = '010'
+                          severity = if_abap_behv_message=>severity-error ) TO reported-%other.
+      LOOP AT keys INTO DATA(ls_key).
+        APPEND VALUE #( %tky = ls_key-%tky ) TO failed-wricefmaster.
+      ENDLOOP.
+      RETURN.
+    ENDIF.
+
+    " Description ใน dialog ว่าง -> ข้าม ไม่ล้างค่าเดิม
+    " การล้างค่าเป็นว่างทำได้ที่ Object Page เท่านั้น
+    DATA(lt_update_key) = keys.
+    DELETE lt_update_key WHERE %param-Description IS INITIAL.
+
+    IF lt_update_key IS NOT INITIAL.
+      MODIFY ENTITIES OF zr_w_master IN LOCAL MODE
+        ENTITY WricefMaster
+          UPDATE FIELDS ( Description )
+          WITH VALUE #( FOR ls_update_key IN lt_update_key
+                      ( %tky        = ls_update_key-%tky
+                        Description = ls_update_key-%param-Description ) )
+        FAILED failed
+        REPORTED reported.
+    ENDIF.
+
+    " อ่านกลับมาส่งเป็น result เพื่อให้ UI refresh แถวที่เปลี่ยน
+    READ ENTITIES OF zr_w_master IN LOCAL MODE
+      ENTITY WricefMaster
+        ALL FIELDS WITH CORRESPONDING #( keys )
+      RESULT DATA(lt_wricef).
+
+    result = VALUE #( FOR ls_wricef IN lt_wricef
+                    ( %tky   = ls_wricef-%tky
+                      %param = ls_wricef ) ).
+
+  ENDMETHOD.
+
+  METHOD getDefaultsForChangeDesc.
+
+    " ใส่ Description เดิมของแถวที่เลือกไว้ใน dialog
+    READ ENTITIES OF zr_w_master IN LOCAL MODE
+      ENTITY WricefMaster
+        FIELDS ( Description )
+        WITH CORRESPONDING #( keys )
+      RESULT DATA(lt_wricef_master).
+
+    result = VALUE #( FOR ls_wricef_master IN lt_wricef_master
+                    ( %tky               = ls_wricef_master-%tky
+                      %param-Description = ls_wricef_master-Description ) ).
 
   ENDMETHOD.
 

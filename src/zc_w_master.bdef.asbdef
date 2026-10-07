@@ -9,6 +9,7 @@ define behavior for ZC_W_MASTER alias WricefMaster
   use update;
   use delete;
 
+  use action changeDescription;
   use action changeStatus;
   use action changePlanFinish;
   use action getWricef;

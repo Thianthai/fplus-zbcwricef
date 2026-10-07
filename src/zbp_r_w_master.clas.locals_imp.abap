@@ -58,7 +58,7 @@ CLASS lhc_WricefMaster DEFINITION INHERITING FROM cl_abap_behavior_handler.
     "! Static action ของปุ่ม Get WRICEF
     "! อ่าน TR ทั้งหมดผ่าน ZCL_W_TR_READER แล้วสร้าง WRICEF เฉพาะรหัสที่ยังไม่มีใน ZTBC_W_MASTER
     METHODS getwricef FOR MODIFY
-      keys FOR ACTION wricefmaster~getwricef.
+      keys FOR ACTION wricefmaster~getwricef RESULT result.
 
 ENDCLASS.
 
@@ -268,17 +268,37 @@ CLASS lhc_WricefMaster IMPLEMENTATION.
                       ( %cid      = lv_new_id
                         %is_draft = if_abap_behv=>mk-off
                         WricefID  = lv_new_id ) )
+      MAPPED   DATA(ls_mapped)
       FAILED   failed
       REPORTED reported.
+
+    " อ่าน record ที่เพิ่งสร้างกลับมาส่งเป็น result
+    " เพื่อให้ Fiori Elements รู้ว่ามีข้อมูลใหม่และ refresh list เอง
+    READ ENTITIES OF zr_w_master IN LOCAL MODE
+      ENTITY WricefMaster
+        ALL FIELDS WITH VALUE #( FOR ls_created_key IN ls_mapped-wricefmaster
+                                 ( %tky = ls_created_key-%tky ) )
+      RESULT DATA(lt_created).
+
+    " static action ไม่มี key ของ record
+    " result จึงผูกกับ %cid ของการเรียก action แทน
+    LOOP AT keys INTO DATA(ls_key).
+      LOOP AT lt_created INTO DATA(ls_created).
+        APPEND VALUE #( %cid   = ls_key-%cid
+                        %param = ls_created ) TO result.
+      ENDLOOP.
+    ENDLOOP.
 
     DATA(lv_created_count)  = lines( lt_new_id ).
     DATA(lv_existing_count) = lines( lt_wricef_id ) - lv_created_count.
 
+    " ส่งจำนวนเป็นข้อความ
+    " ถ้าส่งเป็นตัวเลข ค่า 0 จะถูกมองเป็นค่าว่างและไม่แสดงใน message
     APPEND new_message( id       = 'ZBCWRICEF'
                         number   = '005'
                         severity = if_abap_behv_message=>severity-success
-                        v1       = lv_created_count
-                        v2       = lv_existing_count ) TO reported-%other.
+                        v1       = |{ lv_created_count }|
+                        v2       = |{ lv_existing_count }| ) TO reported-%other.
 
   ENDMETHOD.
 

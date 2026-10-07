@@ -1,6 +1,7 @@
 "! Transport Reader ของ WRICEF Management
 "! อ่าน Transport Request ทั้งหมดของระบบผ่าน XCO แล้วแยกรหัส WRICEF จาก description
-"! อ่านอย่างเดียว ไม่เขียน DB
+"! get_wricef_ids อ่านอย่างเดียว ไม่เขียน DB
+"! ยกเว้น utility ทดสอบ delete_all_records ที่ลบข้อมูลตอนกด F9 ต้องลบออกก่อน handover
 "! ใช้งานบน dev tenant เท่านั้น เพราะ XCO เห็นเฉพาะ TR ของระบบที่รันอยู่
 CLASS zcl_w_tr_reader DEFINITION
   PUBLIC FINAL
@@ -39,6 +40,13 @@ CLASS zcl_w_tr_reader DEFINITION
       IMPORTING iv_description      TYPE csequence
       RETURNING VALUE(rt_wricef_id) TYPE tt_wricef_id.
 
+    "! utility ทดสอบ ลบก่อน handover
+    "! ลบข้อมูล WRICEF ทั้งหมดทั้ง active และ draft ของทั้ง 4 entity
+    "! ไม่ลบตาราง value help
+    "! @parameter io_out | Console output ของ ADT
+    METHODS delete_all_records
+      IMPORTING io_out TYPE REF TO if_oo_adt_classrun_out.
+
 ENDCLASS.
 
 
@@ -47,6 +55,11 @@ CLASS zcl_w_tr_reader IMPLEMENTATION.
 
 
   METHOD if_oo_adt_classrun~main.
+
+    " utility ทดสอบ ลบก่อน handover
+    " ลบข้อมูล WRICEF เดิมทั้งหมดก่อน เพื่อทดสอบปุ่ม Get WRICEF ซ้ำได้
+    delete_all_records( io_out = out ).
+    out->write( `` ).
 
     " dry-run: แสดงรหัสที่ดึงได้อย่างเดียว ไม่สร้าง record
     TRY.
@@ -112,6 +125,38 @@ CLASS zcl_w_tr_reader IMPLEMENTATION.
       lv_wricef_id = substring( val = lv_body off = ls_code-offset len = ls_code-length ).
       INSERT lv_wricef_id INTO TABLE rt_wricef_id.
     ENDLOOP.
+
+  ENDMETHOD.
+
+
+  METHOD delete_all_records.
+
+    " utility ทดสอบ ลบก่อน handover
+    " ลบ child ก่อน master
+    " ถ้ารันไม่จบจะได้ไม่มี child ค้างโดยไม่มี master
+    io_out->write( '=== Delete all WRICEF records (test utility) ===' ).
+
+    DELETE FROM ztbc_w_owner.
+    io_out->write( |ZTBC_W_OWNER      { sy-dbcnt WIDTH = 5 ALIGN = RIGHT } deleted| ).
+    DELETE FROM ztbc_w_object.
+    io_out->write( |ZTBC_W_OBJECT     { sy-dbcnt WIDTH = 5 ALIGN = RIGHT } deleted| ).
+    DELETE FROM ztbc_w_transport.
+    io_out->write( |ZTBC_W_TRANSPORT  { sy-dbcnt WIDTH = 5 ALIGN = RIGHT } deleted| ).
+    DELETE FROM ztbc_w_master.
+    io_out->write( |ZTBC_W_MASTER     { sy-dbcnt WIDTH = 5 ALIGN = RIGHT } deleted| ).
+
+    " draft table
+    " ลบด้วย เพื่อไม่ให้มี draft ค้างที่อ้างถึง record ที่ถูกลบไปแล้ว
+    DELETE FROM ztbc_w_owner_d.
+    io_out->write( |ZTBC_W_OWNER_D    { sy-dbcnt WIDTH = 5 ALIGN = RIGHT } deleted| ).
+    DELETE FROM ztbc_w_object_d.
+    io_out->write( |ZTBC_W_OBJECT_D   { sy-dbcnt WIDTH = 5 ALIGN = RIGHT } deleted| ).
+    DELETE FROM ztbc_w_transp_d.
+    io_out->write( |ZTBC_W_TRANSP_D   { sy-dbcnt WIDTH = 5 ALIGN = RIGHT } deleted| ).
+    DELETE FROM ztbc_w_master_d.
+    io_out->write( |ZTBC_W_MASTER_D   { sy-dbcnt WIDTH = 5 ALIGN = RIGHT } deleted| ).
+
+    COMMIT WORK.
 
   ENDMETHOD.
 

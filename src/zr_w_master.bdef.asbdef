@@ -45,7 +45,8 @@ etag master LocalLastChangedAt    //เป็น ETag ระดับ instance �
   //ปุ่ม Get WRICEF บน List Report: อ่าน TR แล้วสร้าง WRICEF ที่ยังไม่มี
   //static = ไม่ผูกกับ record ใด ไม่ต้องเลือกแถวก่อนกด
   //authorization : none = ไม่เช็คสิทธิ์ (ตามที่ตกลงให้อนุญาตทุกอย่าง)
-  static action ( authorization : none ) getWricef;
+  //result [0..*] $self = คืน record ที่เพิ่งสร้าง เพื่อให้ Fiori Elements refresh list เอง
+  static action ( authorization : none ) getWricef result [0..*] $self;
 
   draft action Activate optimized;
   draft action Discard;

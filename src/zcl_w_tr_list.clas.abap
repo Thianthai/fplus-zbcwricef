@@ -13,8 +13,7 @@ CLASS zcl_w_tr_list DEFINITION
   PRIVATE SECTION.
 
     TYPES:
-      "! TR หนึ่งตัวใน console
-      "! ชื่อ component จะเป็นหัวคอลัมน์
+      "! TR หนึ่งตัวที่จะ export
       BEGIN OF ty_line,
         transport_number  TYPE ze_w_transport_number,
         transport_type    TYPE ze_w_transport_type,
@@ -71,12 +70,10 @@ CLASS zcl_w_tr_list IMPLEMENTATION.
     ENDTRY.
 
     out->write( |All transport requests: { lines( lt_line ) }| ).
-    out->write( lt_line ).
     out->write( `` ).
 
-    " ส่วนนี้ไว้ copy ไปวางใน Excel
-    " คั่นคอลัมน์ด้วย tab Excel จะแยกคอลัมน์ให้เอง
-    out->write( '=== Tab-separated (copy to Excel) ===' ).
+    " แสดงเป็นบรรทัดคั่นด้วย tab อย่างเดียว
+    " copy ไปวางใน Excel แล้ว Excel จะแยกคอลัมน์ให้เอง
     write_tab_separated( io_out  = out
                          it_line = lt_line ).
 

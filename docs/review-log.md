@@ -1,5 +1,13 @@
 # Review Log — ZBCWRICEF
 
+## รอบที่ 6 — 2026-10-07 · Get WRICEF (commit `00026f5`)
+
+- source ทั้ง 5 ไฟล์ตรงกับ code ที่ส่งให้ทุกบรรทัด: `ZCL_W_TR_READER`, BDEF `ZR_W_MASTER` / `ZC_W_MASTER`, `ZBP_R_W_MASTER` (Local Types), DDLX `ZC_W_MASTER`
+- `ZCL_W_TR_READER` description `WRICEF Master - Transport Reader`
+- `ZBCWRICEF` เพิ่ม message 005–007 ข้อความตรงตามที่ confirm
+- grep `ricefw` ทุก case: ไม่พบ · ไม่มีไฟล์อื่นเปลี่ยน
+- **ผลรวม: ผ่าน** · OQ1 (list refresh) ยังเปิดอยู่ รอผลทดสอบใน Preview
+
 ## รอบที่ 5 — 2026-10-07 · ตรวจ push (commit `4b33219`)
 
 - `ZUI_W_MASTER` description + `@EndUserText.label` -> `WRICEF Master - UI Service`

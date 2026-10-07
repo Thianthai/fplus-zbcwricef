@@ -1,6 +1,6 @@
 # Object List — ZBCWRICEF
 
-สถานะอ้างอิงจาก repo (ที่ผู้ใช้ push จาก ADT) · อัปเดตล่าสุด 2026-10-07 (commit `50ea112`)
+สถานะอ้างอิงจาก repo (ที่ผู้ใช้ push จาก ADT) · อัปเดตล่าสุด 2026-10-07 (commit `d41dac8`)
 
 สัญลักษณ์: ✅ อยู่บน repo แล้ว · ⏳ ยังไม่สร้าง
 
@@ -12,7 +12,7 @@
 | `ZTBC_W_OWNER` / `_D` | Table / Draft | ผู้รับผิดชอบ (child) | ✅ |
 | `ZTBC_W_OBJECT` / `_D` | Table / Draft | Technical object (child) | ✅ |
 | `ZTBC_W_TRANSPORT` / `ZTBC_W_TRANSP_D` | Table / Draft | Transport request (child) | ✅ |
-| `ZTBC_W_TYPE_VH` / `_VHT` | Table (C) | WRICEF Type + text | ✅ |
+| `ZTBC_W_TYPE_VH` / `_VHT` | Table (C) | WRICEF Type + text (W/R/I/C/E/F) | ✅ |
 | `ZTBC_W_DTYPE_VH` / `_VHT` | Table (C) | Delivery Type + text | ✅ |
 | `ZTBC_W_OSTAT_VH` / `_VHT` | Table (C) | Overall Status + text + criticality | ✅ |
 | `ZTBC_W_OTYPE_VH` / `_VHT` | Table (C) | Object Type + text | ✅ |
@@ -25,7 +25,7 @@
 | Domain | Data element | Type | สถานะ |
 |---|---|---|---|
 | `ZD_W_ID` | `ZE_W_ID` | CHAR 20 | ✅ |
-| `ZD_W_TYPE` | `ZE_W_TYPE` | CHAR 6 | ✅ |
+| `ZD_W_TYPE` | `ZE_W_TYPE` | CHAR 1 (W/R/I/C/E/F = ตัวอักษรที่ 3 ของ WRICEF ID · เดิม CHAR 6) | ✅ |
 | `ZD_W_DELIVERY_TYPE` | `ZE_W_DELIVERY_TYPE` | CHAR 6 | ✅ |
 | `ZD_W_OVERALL_STATUS` | `ZE_W_OVERALL_STATUS` | CHAR 3 | ✅ |
 | `ZD_W_OBJECT_TYPE` | `ZE_W_OBJECT_TYPE` | CHAR 4 | ✅ |

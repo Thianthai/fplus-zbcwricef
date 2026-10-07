@@ -1,5 +1,13 @@
 # Review Log — ZBCWRICEF
 
+## รอบที่ 13 — 2026-10-07 · List Report columns + WRICEF Type W/R/I/C/E/F (commit `d41dac8`)
+
+- source 4 ไฟล์ตรงกับที่ส่งให้: DDLX `ZC_W_MASTER`, `ZCL_W_VH_GEN`, BDEF `ZR_W_MASTER`, `ZBP_R_W_MASTER` (ต่างแค่บรรทัดว่าง)
+- `ZD_W_TYPE` เปลี่ยนเป็น CHAR 1 (`LENG` / `OUTPUTLEN` = 1) · ไฟล์ table ไม่เปลี่ยน เพราะอ้างผ่าน data element
+- grep `ricefw` ทุก case: ไม่พบ · ไม่มีไฟล์อื่นเปลี่ยน
+- ⏳ รอผลทดสอบใน Preview (ดู [change-list-report-wricef-type.md](change-list-report-wricef-type.md))
+- **ผลรวม: ผ่าน**
+
 ## รอบที่ 12 — 2026-10-07 · `ZCL_W_TR_LIST` เหลือ output ชุดเดียว (commit `50ea112`)
 
 - ลบตาราง ADT (`out->write( lt_line )`) และหัวข้อ `===` ออก เหลือจำนวน TR + บรรทัดคั่น tab อย่างเดียว (ผู้ใช้เลือก ก)
@@ -139,7 +147,7 @@
 | # | Method | ปัญหา | สถานะ |
 |---|---|---|---|
 | D1 | `validateWricefId` · `validateDates` · `validateProgress` | ไม่ clear state message ก่อน validate (`%state_area` ใช้ไม่สม่ำเสมอ) → ใน draft error เก่าอาจค้างหลังผู้ใช้แก้แล้ว | ⏸️ พักไว้ |
-| D2 | `setInitialStatus` | เขียนทับ `OverallStatus` ทุกครั้งตอน create แม้ส่งค่ามาแล้ว ควรอ่านก่อนแล้ว set เฉพาะตัวที่ว่าง · `ls_failed` / `ls_reported` ไม่ได้ใช้ · `'OPN'` hard-code | ⏸️ พักไว้ |
+| D2 (ผู้ใช้สั่ง 2026-10-07: คง determination ไว้ แต่ตั้งค่าเป็นว่างแทน OPN · ประเด็นตัวแปรไม่ได้ใช้ยังพักไว้) | `setInitialStatus` | เขียนทับ `OverallStatus` ทุกครั้งตอน create แม้ส่งค่ามาแล้ว ควรอ่านก่อนแล้ว set เฉพาะตัวที่ว่าง · `ls_failed` / `ls_reported` ไม่ได้ใช้ · `'OPN'` hard-code | ⏸️ พักไว้ |
 | D3 | `changeStatus` | ไม่เช็คว่า status ที่ส่งมาว่าง/ไม่อยู่ใน value help | ⏸️ พักไว้ |
 | D4 | `validateWricefId` | `LOOP ... INTO DATA(ls_check_dup)` ใช้แค่นับ → ควรเป็น `TRANSPORTING NO FIELDS` | ⏸️ พักไว้ |
 | D5 | ทุก local class / method | ยังไม่มี ABAP Doc (`"!`) ตามกฎกลาง | ⏸️ พักไว้ |

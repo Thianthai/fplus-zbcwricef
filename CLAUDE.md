@@ -31,3 +31,4 @@ Claude ห้ามเขียนไฟล์ ABAP ลง `src/` — ส่ง 
 - [docs/review-log.md](docs/review-log.md) — ผลรีวิวแต่ละรอบ + สิ่งที่ต้องแก้
 - [docs/feature-get-wricef.md](docs/feature-get-wricef.md) — ปุ่ม Get WRICEF (สร้าง WRICEF จาก TR) + Open Questions
 - [docs/feature-get-tr.md](docs/feature-get-tr.md) — ปุ่ม Get TR (ดึง TR ของ WRICEF เข้า tab Transports) + Open Questions
+- [docs/change-list-report-wricef-type.md](docs/change-list-report-wricef-type.md) — คอลัมน์ List Report · WRICEF Type W/R/I/C/E/F · เลิก default OPN

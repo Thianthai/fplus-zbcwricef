@@ -1,13 +1,22 @@
 # Review Log — ZBCWRICEF
 
+## รอบที่ 12 — 2026-10-07 · `ZCL_W_TR_LIST` เหลือ output ชุดเดียว (commit `50ea112`)
+
+- ลบตาราง ADT (`out->write( lt_line )`) และหัวข้อ `===` ออก เหลือจำนวน TR + บรรทัดคั่น tab อย่างเดียว (ผู้ใช้เลือก ก)
+- แก้ ABAP Doc ของ `ty_line` เป็น "TR หนึ่งตัวที่จะ export"
+- diff ตรงกับที่ส่งให้ · ไม่มีไฟล์อื่นเปลี่ยน
+- ⏳ รอผู้ใช้แจ้งผลว่าวางใน Excel แล้วแยกคอลัมน์ได้
+- **ผลรวม: ผ่าน**
+
 ## รอบที่ 11 — 2026-10-07 · `ZCL_W_TR_LIST` (commit `c7ff70f`)
 
 - `ZCL_W_TR_LIST` (description `WRICEF Master - Transport List`) ตรงกับที่ส่งให้ทุกบรรทัด
   - F9 แสดง TR ทั้งหมดทุก type ทุกสถานะ เรียงตามเลข TR พร้อม type / status / owner / last changed (UTC+7) / description / รหัส WRICEF ที่ดึงได้
   - มีส่วนคั่นด้วย tab ไว้ copy ไปวางใน Excel · อ่านอย่างเดียว ไม่มี utility ลบข้อมูล
+  - (รอบ 12 ตัดตาราง ADT ออก เหลือแบบคั่น tab อย่างเดียว)
 - `ZCL_W_TR_READER`: ย้าย `extract_wricef_ids` จาก private เป็น public อย่างเดียว logic ไม่เปลี่ยน
 - grep `ricefw` ทุก case: ไม่พบ · ไม่มีไฟล์อื่นเปลี่ยน
-- ⏳ รอผู้ใช้แจ้งผลว่าวางใน Excel แล้วแยกคอลัมน์ได้ (tab ถูกเก็บใน console ADT หรือไม่)
+- ⏳ รอผล Excel -> ย้ายไปรอบ 12
 - **ผลรวม: ผ่าน**
 
 ## รอบที่ 10 — 2026-10-07 · Get TR (commit `e5505ff`)

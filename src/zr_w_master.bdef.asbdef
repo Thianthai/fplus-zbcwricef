@@ -38,6 +38,8 @@ etag master LocalLastChangedAt    //เป็น ETag ระดับ instance �
   update;
   delete;
   determination setInitialStatus on modify { create; } //Initial status
+  //เติม WRICEF Type จากตัวอักษรที่ 3 ของ WRICEF ID เฉพาะตอนที่ type ยังว่าง
+  determination setWricefType on modify { create; field WricefID; }
   validation validateWricefId on save { create; update; field WricefID; } //Check not empty/not dup
   validation validateDates on save { create; update; field PlanStart, PlanFinish; }
   action changeStatus parameter ZA_W_STATUS result [1] $self;

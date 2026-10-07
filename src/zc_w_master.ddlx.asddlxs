@@ -56,7 +56,7 @@ annotate entity ZC_W_MASTER with
   WricefID;
 
   @UI: {
-    lineItem:       [{ position: 20, importance: #HIGH }],
+    lineItem:       [{ position: 30, importance: #HIGH }],
     identification: [{ position: 20 }],
     selectionField: [{ position: 20 }]
   }
@@ -65,8 +65,9 @@ annotate entity ZC_W_MASTER with
   @UI.hidden: true
   WricefTypeText;
   
+  /* ไม่มี lineItem -> ไม่แสดงในตารางของ List Report
+     ยังค้นหาได้จาก filter และเพิ่มคอลัมน์กลับได้ผ่าน View Settings */
   @UI: {
-    lineItem:       [{ position: 30, importance: #MEDIUM }],
     identification: [{ position: 30 }],
     selectionField: [{ position: 30 }]
   }
@@ -76,13 +77,13 @@ annotate entity ZC_W_MASTER with
   DeliveryTypeText;
   
   @UI: {
-    lineItem:       [{ position: 40, importance: #HIGH }],
+    lineItem:       [{ position: 20, importance: #HIGH }],
     identification: [{ position: 40 }]
   }
   Description;
 
   @UI: {
-    lineItem:       [{ position: 50, importance: #HIGH, criticality: 'OverallStatusCriticality' }],
+    lineItem:       [{ position: 80, importance: #HIGH, criticality: 'OverallStatusCriticality' }],
     identification: [{ position: 50, criticality: 'OverallStatusCriticality' }],
     selectionField: [{ position: 40 }]
   }

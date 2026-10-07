@@ -43,6 +43,11 @@ CLASS lhc_WricefMaster DEFINITION INHERITING FROM cl_abap_behavior_handler.
     METHODS setinitialstatus FOR DETERMINE ON MODIFY
       keys FOR wricefmaster~setinitialstatus.
 
+    "! เติม WRICEF Type จากตัวอักษรที่ 3 ของ WRICEF ID
+    "! ทำเฉพาะ record ที่ type ยังว่าง ไม่ทับค่าที่ user เลือกไว้
+    METHODS setwriceftype FOR DETERMINE ON MODIFY
+      keys FOR wricefmaster~setwriceftype.
+
     METHODS validatewricefid FOR VALIDATE ON SAVE
       keys FOR wricefmaster~validatewricefid.
 
@@ -74,13 +79,38 @@ CLASS lhc_WricefMaster IMPLEMENTATION.
 
   METHOD setInitialStatus.
 
+    " ไม่กำหนด status เริ่มต้น ให้ user เลือกเอง
+    " คง determination ไว้ เผื่อกำหนดค่าเริ่มต้นภายหลัง
     MODIFY ENTITIES OF zr_w_master IN LOCAL MODE
       ENTITY WricefMaster
         UPDATE FIELDS ( OverallStatus )
         WITH VALUE #( FOR key IN keys ( %tky = key-%tky
-                                         OverallStatus = 'OPN' ) )
+                                         OverallStatus = '' ) )
       FAILED   DATA(ls_failed)
       REPORTED DATA(ls_reported).
+
+  ENDMETHOD.
+
+  METHOD setWricefType.
+
+    READ ENTITIES OF zr_w_master IN LOCAL MODE
+      ENTITY WricefMaster
+        FIELDS ( WricefID WricefType )
+        WITH CORRESPONDING #( keys )
+      RESULT DATA(lt_wricef_master).
+
+    " WRICEF ID รูปแบบ AABNNN -> ตัวอักษรที่ 3 คือ WRICEF Type
+    " เติมเฉพาะ record ที่ type ยังว่าง
+    MODIFY ENTITIES OF zr_w_master IN LOCAL MODE
+      ENTITY WricefMaster
+        UPDATE FIELDS ( WricefType )
+        WITH VALUE #( FOR ls_wricef_master IN lt_wricef_master
+                      WHERE ( WricefType IS INITIAL AND WricefID IS NOT INITIAL )
+                      ( %tky       = ls_wricef_master-%tky
+                        WricefType = ls_wricef_master-WricefID+2(1) ) )
+      REPORTED DATA(lt_update_reported).
+
+    reported = CORRESPONDING #( DEEP lt_update_reported ).
 
   ENDMETHOD.
 
@@ -228,7 +258,8 @@ CLASS lhc_WricefMaster IMPLEMENTATION.
 
   METHOD getWricef.
 
-    DATA lt_new_id TYPE zcl_w_tr_reader=>tt_wricef_id.
+    DATA lt_new_id    TYPE zcl_w_tr_reader=>tt_wricef_id.
+    DATA lt_fill_type TYPE TABLE FOR UPDATE zr_w_master\\wricefmaster.
 
     " อ่าน TR ทั้งหมดแล้วแยกรหัส WRICEF ผ่าน class helper
     TRY.
@@ -243,28 +274,37 @@ CLASS lhc_WricefMaster IMPLEMENTATION.
     " เช็คกับ active data ว่ารหัสไหนมีอยู่แล้ว
     " เหลือเฉพาะรหัสที่ยังไม่มีไว้ใน lt_new_id
     IF lt_wricef_id IS NOT INITIAL.
-      SELECT wricef_id
+      SELECT wricef_uuid, wricef_id, wricef_type
         FROM ztbc_w_master
         FOR ALL ENTRIES IN @lt_wricef_id
         WHERE wricef_id = @lt_wricef_id-table_line
-        INTO TABLE @DATA(lt_existing_id).
+        INTO TABLE @DATA(lt_existing).
 
       LOOP AT lt_wricef_id INTO DATA(lv_wricef_id).
-        IF NOT line_exists( lt_existing_id[ wricef_id = lv_wricef_id ] ).
+        IF NOT line_exists( lt_existing[ wricef_id = lv_wricef_id ] ).
           INSERT lv_wricef_id INTO TABLE lt_new_id.
         ENDIF.
       ENDLOOP.
+
+      " record เดิมที่ WRICEF Type ยังว่าง -> เติม type ให้
+      " WRICEF ID รูปแบบ AABNNN -> ตัวอักษรที่ 3 คือ WRICEF Type
+      LOOP AT lt_existing INTO DATA(ls_existing) WHERE wricef_type IS INITIAL.
+        APPEND VALUE #( %is_draft  = if_abap_behv=>mk-off
+                        WricefUUID = ls_existing-wricef_uuid
+                        WricefType = ls_existing-wricef_id+2(1) ) TO lt_fill_type.
+      ENDLOOP.
     ENDIF.
 
-    IF lt_new_id IS INITIAL.
+    IF lt_new_id IS INITIAL AND lt_fill_type IS INITIAL.
       APPEND new_message( id       = 'ZBCWRICEF'
                           number   = '006'
                           severity = if_abap_behv_message=>severity-information ) TO reported-%other.
       RETURN.
     ENDIF.
 
-    " สร้างเป็น active instance ตรง ๆ ไม่ผ่าน draft
-    " ใส่แค่ WricefID ส่วน OverallStatus ได้จาก determination setInitialStatus
+    " สร้าง record ใหม่และเติม type ให้ record เดิมในคราวเดียว
+    " เป็น active instance ตรง ๆ ไม่ผ่าน draft
+    " record ใหม่ใส่แค่ WricefID ส่วน WricefType ได้จาก determination setWricefType
     " %cid ใช้รหัส WRICEF ได้เลย เพราะใน lt_new_id ไม่มีรหัสซ้ำ
     MODIFY ENTITIES OF zr_w_master IN LOCAL MODE
       ENTITY WricefMaster
@@ -273,9 +313,19 @@ CLASS lhc_WricefMaster IMPLEMENTATION.
                       ( %cid      = lv_new_id
                         %is_draft = if_abap_behv=>mk-off
                         WricefID  = lv_new_id ) )
+        UPDATE FIELDS ( WricefType )
+        WITH lt_fill_type
       MAPPED   DATA(ls_mapped)
       FAILED   failed
       REPORTED reported.
+
+    " ไม่มีรหัสใหม่ มีแค่การเติม type ให้ record เดิม
+    IF lt_new_id IS INITIAL.
+      APPEND new_message( id       = 'ZBCWRICEF'
+                          number   = '006'
+                          severity = if_abap_behv_message=>severity-information ) TO reported-%other.
+      RETURN.
+    ENDIF.
 
     " อ่าน record ที่เพิ่งสร้างกลับมาส่งเป็น result
     " เพื่อให้ Fiori Elements รู้ว่ามีข้อมูลใหม่และ refresh list เอง
@@ -306,7 +356,6 @@ CLASS lhc_WricefMaster IMPLEMENTATION.
                         v2       = |{ lv_existing_count }| ) TO reported-%other.
 
   ENDMETHOD.
-
 
   METHOD getTransports.
 

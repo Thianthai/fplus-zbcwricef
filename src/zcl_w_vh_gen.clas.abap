@@ -109,13 +109,15 @@ CLASS ZCL_W_VH_GEN IMPLEMENTATION.
     DATA lt_check TYPE STANDARD TABLE OF ztbc_w_type_vh  WITH EMPTY KEY.
     DATA lt_text  TYPE STANDARD TABLE OF ztbc_w_type_vht WITH EMPTY KEY.
 
+    " code คือตัวอักษรที่ 3 ของ WRICEF ID เช่น ARI002 -> I (Interface)
+    " เรียงตามลำดับตัวอักษรของคำว่า WRICEF
     DATA(lt_code) = VALUE tt_code(
-      ( code = 'RPT'  description = 'Report'      sort_order = 10 is_active = abap_true )
-      ( code = 'INTF' description = 'Interface'   sort_order = 20 is_active = abap_true )
-      ( code = 'CONV' description = 'Conversion'  sort_order = 30 is_active = abap_true )
-      ( code = 'ENH'  description = 'Enhancement' sort_order = 40 is_active = abap_true )
-      ( code = 'FORM' description = 'Form'        sort_order = 50 is_active = abap_true )
-      ( code = 'WF'   description = 'Workflow'    sort_order = 60 is_active = abap_true ) ).
+      ( code = 'W' description = 'Workflow'    sort_order = 10 is_active = abap_true )
+      ( code = 'R' description = 'Report'      sort_order = 20 is_active = abap_true )
+      ( code = 'I' description = 'Interface'   sort_order = 30 is_active = abap_true )
+      ( code = 'C' description = 'Conversion'  sort_order = 40 is_active = abap_true )
+      ( code = 'E' description = 'Enhancement' sort_order = 50 is_active = abap_true )
+      ( code = 'F' description = 'Form'        sort_order = 60 is_active = abap_true ) ).
 
     LOOP AT lt_code INTO DATA(ls_code).
       INSERT VALUE #( wricef_type = ls_code-code

@@ -1,4 +1,4 @@
-@EndUserText.label: 'WRICEF Management - UI Service'
+@EndUserText.label: 'WRICEF Master - UI Service'
 define service ZUI_W_MASTER {
   expose ZC_W_MASTER    as WricefMaster;
   expose ZC_W_OWNER     as Owner;

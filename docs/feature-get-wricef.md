@@ -1,6 +1,6 @@
 # Feature — Get WRICEF (สร้าง WRICEF จาก Transport Request)
 
-สถานะ: ✅ อยู่บน repo แล้ว (commit `00026f5`) · รอทดสอบใน Preview (OQ1)
+สถานะ: ✅ ทดสอบใน Preview ผ่าน (commit `688fe7e`) · เหลือ OQ1 รอเฟสแอป Fiori
 
 ## เป้าหมาย
 
@@ -61,4 +61,4 @@ PPE002, PPE003, PUF001, SDE002, SDE003, SDE004, SDF001, SDF002, SDF004, SDF008, 
 
 | # | คำถาม | สถานะ |
 |---|---|---|
-| OQ1 | หลังกดปุ่ม list ไม่ refresh เอง → แก้ด้วย side effects ใน BDEF หรือแก้ฝั่ง Fiori app code | 🔓 เปิดไว้ — ทดสอบใน Preview ก่อน |
+| OQ1 | หลังกดปุ่ม list ไม่ refresh เอง (ยืนยันใน Preview 2026-10-07) | 🔓 เปิดไว้ — ก. `result [0..*] $self` ลองแล้วไม่ได้ผล · ข. side effects ใช้กับ static action ไม่ได้ · เหลือ ค. `ExtensionAPI.refresh()` ใน controller extension ตอนสร้างแอป Fiori จริง · ระหว่างนี้ให้ user กด Go เอง |

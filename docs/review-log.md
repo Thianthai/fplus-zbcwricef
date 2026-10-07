@@ -1,5 +1,35 @@
 # Review Log — ZBCWRICEF
 
+## รอบที่ 9 — 2026-10-07 · OQ1 ทางเลือก ก + fix message 005 + test utility (commit `688fe7e`)
+
+- source 3 ไฟล์ตรงกับที่ส่งให้ทุกบรรทัด: BDEF `ZR_W_MASTER`, `ZBP_R_W_MASTER` (Local Types), `ZCL_W_TR_READER`
+- ผลทดสอบ (ผู้ใช้):
+  - ✅ F9 ลบข้อมูลทั้ง 8 ตารางได้ · Get WRICEF สร้าง 25 รหัส · กดซ้ำได้ message 006
+  - ✅ message 005 แสดง `&2` ครบแล้ว (`25 ... 0 already exist`)
+  - ❌ OQ1 ทางเลือก ก (`result [0..*] $self`) list ยังไม่ refresh เอง ต้องกด Go
+- ทางเลือก ข (side effects) ทำไม่ได้: RAP ไม่อนุญาตให้ static action เป็น trigger หรือ target ของ side effects (syntax error "Static action/function is not allowed here")
+- เหลือทางเลือก ค: refresh ฝั่ง Fiori app (`ExtensionAPI.refresh()` ใน controller extension) -> ทำตอนสร้างแอป Fiori จริง
+- D6 utility ทดสอบยังอยู่ใน `ZCL_W_TR_READER` -> ผู้ใช้จะลบออกเองหลังทดสอบ
+
+## รอบที่ 8 — 2026-10-07 · ทดสอบ Get WRICEF ใน Preview
+
+| ทดสอบ | ผล |
+|---|---|
+| กดครั้งแรก | ✅ สร้าง 25 รหัส (23 จากข้อมูลจำลอง + `IME003`, `PMF001` จาก TR ที่สร้างใหม่ทีหลัง ผู้ใช้ยืนยันแล้ว) |
+| status ของ record ใหม่ | ✅ `OPN` (Not Assigned) |
+| กดซ้ำ | ✅ `No new WRICEF found in transport requests` |
+| message 005 | ❌ `&2` ไม่แสดง เมื่อจำนวน existing = 0 -> ส่ง integer 0 เข้า `new_message` แล้วถูกมองเป็นค่าว่าง -> แก้เป็นส่ง string |
+| OQ1 list refresh | ❌ ต้องกด Go เอง -> ลองทางเลือก ก: `getWricef result [0..*] $self` |
+
+## รอบที่ 7 — 2026-10-07 · `$metadata` error ของ `ZUI_W_MASTER`
+
+- error `/IWBEP/CM_V4_MED/082`: Property 'TransportType' has the same EDM name as entity type 'TransportType'
+- สาเหตุ: OData V4 ตั้งชื่อ entity type เป็น `<alias>Type` -> alias `Transport` / `Object` ชนกับ field `TransportType` / `ObjectType`
+- ตรวจจาก repo ไม่เจอ เพราะ `$metadata` สร้างตอน runtime เท่านั้น -> **ต่อไปตั้ง alias ต้องเช็ค `<alias>Type` กับชื่อ field ทุกครั้ง**
+- แก้ (ผู้ใช้เลือกชุด B): `Owner` -> `WricefOwner` · `Object` -> `WricefObject` · `Transport` -> `WricefTransport` · `WricefMaster` คงเดิม
+- ✅ push แล้ว (commit `6e49116`) · source ตรงกับที่ส่งให้ · เช็ค `<alias>Type` กับ field ของทั้ง 4 projection แล้วไม่ชน
+- ✅ ผู้ใช้ยืนยัน `$metadata` และ Preview เปิดได้แล้ว
+
 ## รอบที่ 6 — 2026-10-07 · Get WRICEF (commit `00026f5`)
 
 - source ทั้ง 5 ไฟล์ตรงกับ code ที่ส่งให้ทุกบรรทัด: `ZCL_W_TR_READER`, BDEF `ZR_W_MASTER` / `ZC_W_MASTER`, `ZBP_R_W_MASTER` (Local Types), DDLX `ZC_W_MASTER`
@@ -85,6 +115,7 @@
 | D3 | `changeStatus` | ไม่เช็คว่า status ที่ส่งมาว่าง/ไม่อยู่ใน value help | ⏸️ พักไว้ |
 | D4 | `validateWricefId` | `LOOP ... INTO DATA(ls_check_dup)` ใช้แค่นับ → ควรเป็น `TRANSPORTING NO FIELDS` | ⏸️ พักไว้ |
 | D5 | ทุก local class / method | ยังไม่มี ABAP Doc (`"!`) ตามกฎกลาง | ⏸️ พักไว้ |
+| D6 | `ZCL_W_TR_READER` (อยู่บน repo แล้ว `688fe7e`) | **utility ทดสอบ** `delete_all_records` ลบข้อมูล WRICEF ทั้ง active + draft (8 ตาราง) ทุกครั้งที่กด F9 ไม่มีตัวกัน (ผู้ใช้เลือก 2026-10-07) -> **ผู้ใช้จะลบออกเองหลังทดสอบเสร็จ ต้องเช็คว่าถูกลบก่อน handover** | ⏳ |
 
 ### E. ประเด็นออกแบบ — ✅ ปิดแล้ว (ผู้ใช้ตัดสินใจ 2026-10-07)
 

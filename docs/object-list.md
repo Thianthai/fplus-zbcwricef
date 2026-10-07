@@ -1,6 +1,6 @@
 # Object List — ZBCWRICEF
 
-สถานะอ้างอิงจาก repo (ที่ผู้ใช้ push จาก ADT) · อัปเดตล่าสุด 2026-10-07 (commit `00026f5`)
+สถานะอ้างอิงจาก repo (ที่ผู้ใช้ push จาก ADT) · อัปเดตล่าสุด 2026-10-07 (commit `688fe7e`)
 
 สัญลักษณ์: ✅ อยู่บน repo แล้ว · ⏳ ยังไม่สร้าง
 
@@ -59,7 +59,7 @@
 
 | Object | ประเภท | สถานะ |
 |---|---|---|
-| `ZUI_W_MASTER` | Service definition (UI) | ✅ |
+| `ZUI_W_MASTER` | Service definition (UI) · alias `WricefMaster` / `WricefOwner` / `WricefObject` / `WricefTransport` | ✅ |
 | `ZUI_W_MASTER_O4` | Service binding (OData V4 - UI) · published | ✅ |
 | `ZUI_W_MASTER_O4_0001_G4BA` | OData V4 service group (SCO2) · SAP สร้างให้ตอน publish | ✅ |
 | `7B42D76CF68B7100931A7C29FFFA3A` | Authorization default (SUSH, `S_START`) · SAP สร้างให้ตอน publish | ✅ |
@@ -70,5 +70,5 @@
 |---|---|---|
 | `ZBCWRICEF` | Package | ✅ |
 | `ZBCWRICEF` | Message class (001–007) | ✅ |
-| `ZCL_W_TR_READER` | Class · อ่าน TR + แยกรหัส WRICEF ให้ action `getWricef` (ดู [feature-get-wricef.md](feature-get-wricef.md)) | ✅ |
+| `ZCL_W_TR_READER` | Class · อ่าน TR + แยกรหัส WRICEF ให้ action `getWricef` (ดู [feature-get-wricef.md](feature-get-wricef.md)) · มี utility ทดสอบ `delete_all_records` ต้องลบก่อน handover (D6) | ✅ |
 | `ZCL_W_VH_GEN` | Class (`if_oo_adt_classrun`) · โหลดข้อมูล value help ลง `ZTBC_W_*_VH` / `_VHT` · ใช้บน Customizing Tenant เท่านั้น ไม่นำขึ้น Test/Production | ✅ |

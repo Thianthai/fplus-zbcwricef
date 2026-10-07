@@ -1,5 +1,15 @@
 # Review Log — ZBCWRICEF
 
+## รอบที่ 11 — 2026-10-07 · `ZCL_W_TR_LIST` (commit `c7ff70f`)
+
+- `ZCL_W_TR_LIST` (description `WRICEF Master - Transport List`) ตรงกับที่ส่งให้ทุกบรรทัด
+  - F9 แสดง TR ทั้งหมดทุก type ทุกสถานะ เรียงตามเลข TR พร้อม type / status / owner / last changed (UTC+7) / description / รหัส WRICEF ที่ดึงได้
+  - มีส่วนคั่นด้วย tab ไว้ copy ไปวางใน Excel · อ่านอย่างเดียว ไม่มี utility ลบข้อมูล
+- `ZCL_W_TR_READER`: ย้าย `extract_wricef_ids` จาก private เป็น public อย่างเดียว logic ไม่เปลี่ยน
+- grep `ricefw` ทุก case: ไม่พบ · ไม่มีไฟล์อื่นเปลี่ยน
+- ⏳ รอผู้ใช้แจ้งผลว่าวางใน Excel แล้วแยกคอลัมน์ได้ (tab ถูกเก็บใน console ADT หรือไม่)
+- **ผลรวม: ผ่าน**
+
 ## รอบที่ 10 — 2026-10-07 · Get TR (commit `e5505ff`)
 
 - source 5 ไฟล์ตรงกับที่ส่งให้: `ZCL_W_TR_READER`, BDEF `ZR_W_MASTER` / `ZC_W_MASTER`, DDLX `ZC_W_MASTER`, `ZBP_R_W_MASTER` (ต่างแค่บรรทัดว่าง 1 บรรทัด)

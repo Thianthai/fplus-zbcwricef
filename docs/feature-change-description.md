@@ -1,6 +1,6 @@
 # Feature — ปุ่ม Change Description + Progress (%) + ปรับปุ่มบน Object Page
 
-สถานะ: ✅ อยู่บน repo แล้ว (commit `0701429`) · ทดสอบผ่านยกเว้น default ใน dialog (OQ5)
+สถานะ: ✅ ทดสอบใน Preview ผ่านทั้งหมด (commit `466872c` · ผู้ใช้ยืนยัน 2026-10-07)
 
 ## คำขอและข้อตกลง (ผู้ใช้ 2026-10-07)
 
@@ -38,10 +38,10 @@
 | dialog ว่างแล้วกด OK -> ไม่ล้างค่า | ✅ |
 | เลือก 2 แถว -> message 010 ไม่แก้อะไร | ✅ (`invocationGrouping: #CHANGE_SET` ใช้ได้) |
 | header Object Page เหลือ Edit / Delete / Get TR · tab Owners ยังเป็น progress bar | ✅ |
-| dialog มี Description เดิม | ❌ -> OQ5 |
+| dialog มี Description เดิม | ✅ หลังเพิ่ม `use function GetDefaultsForChangeDesc;` ใน projection (`466872c`) |
 
 ## Open Questions
 
 | # | คำถาม | สถานะ |
 |---|---|---|
-| OQ5 | default function ไม่ทำงาน · สาเหตุ 1: projection ต้อง `use function GetDefaultsForChangeDesc;` (ยืนยันจาก SAP Community / software-heroes) · สาเหตุ 2: ชื่อ function ควรเป็น `GetDefaultsFor` + ชื่อ action ตรงตัว แต่ `GetDefaultsForChangeDescription` ยาว 31 ตัว -> ถ้าข้อ 1 ไม่พอ ต้องเปลี่ยนชื่อ action ให้สั้นลง | 🔓 ลองข้อ 1 ก่อน |
+| OQ5 | default function ไม่ทำงาน · สาเหตุ 1: projection ต้อง `use function GetDefaultsForChangeDesc;` (ยืนยันจาก SAP Community / software-heroes) · สาเหตุ 2: ชื่อ function ควรเป็น `GetDefaultsFor` + ชื่อ action ตรงตัว แต่ `GetDefaultsForChangeDescription` ยาว 31 ตัว -> ถ้าข้อ 1 ไม่พอ ต้องเปลี่ยนชื่อ action ให้สั้นลง | ✅ ปิด — สาเหตุ 1 (projection ต้อง `use function`) · ชื่อ function ไม่ต้องตรงกับชื่อ action ก็ทำงานได้ |

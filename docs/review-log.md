@@ -1,5 +1,12 @@
 # Review Log — ZBCWRICEF
 
+## รอบที่ 16 — 2026-10-07 · OQ5 default function (commit `466872c`)
+
+- BDEF `ZC_W_MASTER` เพิ่ม `use function GetDefaultsForChangeDesc;` บรรทัดเดียว ตรงกับที่แจ้ง · ไม่มีไฟล์อื่นเปลี่ยน
+- ผู้ใช้ทดสอบ: dialog มี Description เดิมแล้ว -> ปิด OQ5
+- บทเรียน: default function ของ action ต้อง `use function` ใน projection BDEF ด้วย
+- **ผลรวม: ผ่าน**
+
 ## รอบที่ 15 — 2026-10-07 · Change Description + Progress (%) (commit `0701429`)
 
 - source ตรงกับที่ส่งให้: `ZA_W_DESCRIPTION` (ใหม่), BDEF `ZR_W_MASTER` / `ZC_W_MASTER`, `ZBP_R_W_MASTER`, DDLX `ZC_W_MASTER` · message 010 ตรง

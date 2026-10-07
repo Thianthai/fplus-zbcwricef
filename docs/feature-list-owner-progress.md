@@ -1,6 +1,6 @@
 # Feature — คอลัมน์ Owner / Progress ใน List Report
 
-สถานะ: ✅ อยู่บน repo แล้ว (commit `e389fa5`) · ⏳ รอผลทดสอบใน Preview
+สถานะ: ✅ ทดสอบใน Preview ผ่านทั้งหมด (commit `e389fa5` · ผู้ใช้ยืนยัน 2026-10-07)
 
 ## คำขอ (ผู้ใช้ 2026-10-07)
 
@@ -30,3 +30,9 @@ CDS aggregate เลือกทั้งแถวไม่ได้ จึง�
 
 `ZR_W_MASTER` เพิ่ม association `_AbapOwner` (ไม่เพิ่ม field -> ไม่กระทบ draft table)
 `ZC_W_MASTER` ดึง `_AbapOwner.OwnerDisplayName` / `_AbapOwner.Progress` · DDLX lineItem 40 / 50 + dataPoint progress
+
+## ผลทดสอบใน Preview (ผู้ใช้ยืนยัน 2026-10-07)
+
+- ✅ ผ่านทุกเคส: ชื่อจริง / fallback owner_name / AB หลายคนไม่แสดงซ้ำ / ไม่มี AB แสดงว่าง / role อื่นไม่ขึ้น
+- ตอนแรกคอลัมน์ว่างเพราะยังไม่ได้เพิ่ม owner role AB (หลังลบข้อมูลด้วย D6 แล้วกด Get WRICEF ใหม่ record จะยังไม่มี owner) ไม่ใช่ bug
+- หมายเหตุ: view อ่านจากตาราง active -> owner ที่เพิ่มใน draft จะขึ้นในคอลัมน์หลังกด Save

@@ -1,6 +1,6 @@
 "! Transport Reader ของ WRICEF Management
 "! อ่าน Transport Request ทั้งหมดของระบบผ่าน XCO แล้วแยกรหัส WRICEF จาก description
-"! get_wricef_ids อ่านอย่างเดียว ไม่เขียน DB
+"! get_wricef_ids และ get_transports อ่านอย่างเดียว ไม่เขียน DB
 "! ยกเว้น utility ทดสอบ delete_all_records ที่ลบข้อมูลตอนกด F9 ต้องลบออกก่อน handover
 "! ใช้งานบน dev tenant เท่านั้น เพราะ XCO เห็นเฉพาะ TR ของระบบที่รันอยู่
 CLASS zcl_w_tr_reader DEFINITION
@@ -14,13 +14,46 @@ CLASS zcl_w_tr_reader DEFINITION
       "! รหัส WRICEF รูปแบบ AABNNN
       ty_wricef_id TYPE ze_w_id,
       "! รายการรหัส WRICEF ไม่ซ้ำ เรียงตามตัวอักษร
-      tt_wricef_id TYPE SORTED TABLE OF ty_wricef_id WITH UNIQUE KEY table_line.
+      tt_wricef_id TYPE SORTED TABLE OF ty_wricef_id WITH UNIQUE KEY table_line,
+      "! TR หนึ่งตัวที่มีรหัส WRICEF อยู่ใน description
+      BEGIN OF ty_transport,
+        "! เลข TR
+        transport_number TYPE ze_w_transport_number,
+        "! type ตาม code ใน value help (WB, CUS, TOC)
+        transport_type   TYPE ze_w_transport_type,
+        "! status ของ TR (D = Modifiable, R = Released)
+        transport_status TYPE ze_w_transport_status,
+        "! description ของ TR
+        description      TYPE c LENGTH 80,
+        "! วันที่ release ตามเวลาไทย (UTC+7) ว่างถ้ายังไม่ release
+        released_on      TYPE d,
+        "! วันเวลา release ตามเวลาไทย รูปแบบ YYYYMMDDhhmmss ใช้เรียงลำดับ
+        released_at      TYPE c LENGTH 14,
+        "! ลำดับ import ตามเวลา release เริ่มที่ 1 ว่างถ้ายังไม่ release
+        import_sequence  TYPE int2,
+      END OF ty_transport,
+      "! รายการ TR เรียงตามเลข TR
+      tt_transport TYPE STANDARD TABLE OF ty_transport WITH EMPTY KEY.
+
+    CONSTANTS:
+      "! status ของ TR ที่ release แล้ว
+      gc_status_released TYPE ze_w_transport_status VALUE 'R'.
 
     "! อ่าน TR ทั้งหมด (ทุกสถานะ ระดับ request) แล้วคืนรหัส WRICEF ที่ไม่ซ้ำ
     "! ถ้าอ่าน TR ไม่สำเร็จ XCO จะส่ง cx_xco_runtime_exception ออกมา
     "! @parameter rt_wricef_id | รหัส WRICEF รูปแบบ AABNNN
     METHODS get_wricef_ids
       RETURNING VALUE(rt_wricef_id) TYPE tt_wricef_id.
+
+    "! อ่าน TR ทุกสถานะ (ระดับ request) ที่ description มีรหัส WRICEF ที่ระบุ
+    "! ได้เฉพาะ TR type Workbench, Customizing และ Transport of Copies
+    "! คำนวณลำดับ import ให้ด้วย
+    "! ถ้าอ่าน TR ไม่สำเร็จ XCO จะส่ง cx_xco_runtime_exception ออกมา
+    "! @parameter iv_wricef_id | รหัส WRICEF รูปแบบ AABNNN
+    "! @parameter rt_transport | TR ที่เจอ เรียงตามเลข TR
+    METHODS get_transports
+      IMPORTING iv_wricef_id        TYPE ty_wricef_id
+      RETURNING VALUE(rt_transport) TYPE tt_transport.
 
   PROTECTED SECTION.
   PRIVATE SECTION.
@@ -92,6 +125,77 @@ CLASS zcl_w_tr_reader IMPLEMENTATION.
         INSERT lv_found_id INTO TABLE rt_wricef_id.
       ENDLOOP.
     ENDLOOP.
+
+  ENDMETHOD.
+
+
+  METHOD get_transports.
+
+    " คู่ type ของ TR จาก XCO กับ code ใน value help
+    TYPES:
+      BEGIN OF ty_type_map,
+        type      TYPE REF TO cl_xco_tr_type,
+        type_code TYPE ze_w_transport_type,
+      END OF ty_type_map,
+      tt_type_map TYPE STANDARD TABLE OF ty_type_map WITH EMPTY KEY.
+
+    DATA lv_sequence TYPE int2.
+
+    " properties ของ TR ไม่มี type
+    " จึง query แยกทีละ type แล้วรู้ type จากรอบที่เจอ
+    " TR type อื่น เช่น relocation หรือ piece list จะไม่ถูกดึงมา
+    DATA(lt_type_map) = VALUE tt_type_map(
+      ( type = xco_cp_transport=>type->workbench_request   type_code = 'WB' )
+      ( type = xco_cp_transport=>type->customizing_request type_code = 'CUS' )
+      ( type = xco_cp_transport=>type->transport_of_copies type_code = 'TOC' ) ).
+
+    LOOP AT lt_type_map INTO DATA(ls_type_map).
+      DATA(lt_transports) = xco_cp_cts=>transports->where( VALUE #(
+                              ( xco_cp_transport=>filter->request_type( ls_type_map-type ) ) )
+                            )->resolve( xco_cp_transport=>resolution->request ).
+
+      LOOP AT lt_transports INTO DATA(lo_transport).
+        DATA(lo_request)     = lo_transport->get_request( ).
+        DATA(lo_properties)  = lo_request->properties( ).
+        DATA(lv_description) = lo_properties->get_short_description( ).
+
+        " ใช้กฎแยกรหัสเดียวกับปุ่ม Get WRICEF
+        " เอาเฉพาะ TR ที่มีรหัสตรงกับ WRICEF ที่ขอ
+        DATA(lt_found_id) = extract_wricef_ids( lv_description ).
+        IF NOT line_exists( lt_found_id[ table_line = iv_wricef_id ] ).
+          CONTINUE.
+        ENDIF.
+
+        DATA(ls_transport) = VALUE ty_transport(
+          transport_number = lo_request->value
+          transport_type   = ls_type_map-type_code
+          transport_status = lo_properties->get_status( )->value
+          description      = lv_description ).
+
+        IF ls_transport-transport_status = gc_status_released.
+          " properties ไม่มีเวลา release
+          " TR ที่ release แล้วจึงใช้ last_changed แทน
+          " last_changed เป็นเวลา UTC -> บวก 7 ชั่วโมงเป็นเวลาไทยก่อนตัดเป็นวันที่
+          DATA(lo_released_local) = lo_properties->get_last_changed( )->add( iv_hour = 7 ).
+          DATA(lv_released_date)  = lo_released_local->date->as( xco_cp_time=>format->abap )->value.
+          ls_transport-released_on = lv_released_date.
+          ls_transport-released_at = lv_released_date && lo_released_local->time->as( xco_cp_time=>format->abap )->value.
+        ENDIF.
+
+        APPEND ls_transport TO rt_transport.
+      ENDLOOP.
+    ENDLOOP.
+
+    " ลำดับ import: TR ที่ release แล้วเรียงตามเวลา release -> 1, 2, 3
+    " TR ที่ยังไม่ release เว้นว่าง
+    SORT rt_transport BY released_at transport_number.
+    LOOP AT rt_transport ASSIGNING FIELD-SYMBOL(<lfs_transport>)
+      WHERE transport_status = gc_status_released.
+      lv_sequence += 1.
+      <lfs_transport>-import_sequence = lv_sequence.
+    ENDLOOP.
+
+    SORT rt_transport BY transport_number.
 
   ENDMETHOD.
 

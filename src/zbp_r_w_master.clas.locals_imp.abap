@@ -60,6 +60,11 @@ CLASS lhc_WricefMaster DEFINITION INHERITING FROM cl_abap_behavior_handler.
     METHODS getwricef FOR MODIFY
       keys FOR ACTION wricefmaster~getwricef RESULT result.
 
+    "! Action ของปุ่ม Get TR
+    "! ดึง TR ที่มีรหัส WRICEF ของ record นี้ แล้วสร้างหรืออัปเดตลง child Transport
+    METHODS gettransports FOR MODIFY
+      keys FOR ACTION wricefmaster~gettransports RESULT result.
+
 ENDCLASS.
 
 CLASS lhc_WricefMaster IMPLEMENTATION.
@@ -299,6 +304,141 @@ CLASS lhc_WricefMaster IMPLEMENTATION.
                         severity = if_abap_behv_message=>severity-success
                         v1       = |{ lv_created_count }|
                         v2       = |{ lv_existing_count }| ) TO reported-%other.
+
+  ENDMETHOD.
+
+
+  METHOD getTransports.
+
+    DATA lt_create   TYPE TABLE FOR CREATE zr_w_master\_transport.
+    DATA lt_update   TYPE TABLE FOR UPDATE zr_w_master\\transport.
+    DATA ls_create   LIKE LINE OF lt_create.
+    DATA lt_reported LIKE reported-wricefmaster.
+    DATA lt_failed   LIKE failed-wricefmaster.
+
+    " อ่านรหัส WRICEF ของ record ที่กดปุ่ม
+    READ ENTITIES OF zr_w_master IN LOCAL MODE
+      ENTITY WricefMaster
+        FIELDS ( WricefID )
+        WITH CORRESPONDING #( keys )
+      RESULT DATA(lt_wricef_master).
+
+    " อ่าน TR ที่มีอยู่แล้วของแต่ละ record
+    " อ่านผ่าน association จึงได้ข้อมูลตรงกับโหมดที่เปิดอยู่ (active หรือ draft)
+    READ ENTITIES OF zr_w_master IN LOCAL MODE
+      ENTITY WricefMaster BY \_Transport
+        FIELDS ( WricefUUID TransportNumber )
+        WITH CORRESPONDING #( keys )
+      RESULT DATA(lt_existing_transport).
+
+    DATA(lo_reader) = NEW zcl_w_tr_reader( ).
+
+    LOOP AT lt_wricef_master INTO DATA(ls_wricef_master).
+
+      TRY.
+          DATA(lt_transport) = lo_reader->get_transports( ls_wricef_master-WricefID ).
+        CATCH cx_xco_runtime_exception.
+          APPEND VALUE #( %tky = ls_wricef_master-%tky
+                          %msg = new_message( id       = 'ZBCWRICEF'
+                                              number   = '007'
+                                              severity = if_abap_behv_message=>severity-error )
+                        ) TO lt_reported.
+          APPEND VALUE #( %tky = ls_wricef_master-%tky ) TO lt_failed.
+          CONTINUE.
+      ENDTRY.
+
+      " ไม่เจอ TR ของ WRICEF นี้เลย
+      IF lt_transport IS INITIAL.
+        APPEND VALUE #( %tky = ls_wricef_master-%tky
+                        %msg = new_message( id       = 'ZBCWRICEF'
+                                            number   = '009'
+                                            severity = if_abap_behv_message=>severity-information
+                                            v1       = ls_wricef_master-WricefID )
+                      ) TO lt_reported.
+        CONTINUE.
+      ENDIF.
+
+      CLEAR ls_create.
+      ls_create-%tky = ls_wricef_master-%tky.
+      DATA(lv_created_count)  = 0.
+      DATA(lv_existing_count) = 0.
+
+      LOOP AT lt_transport INTO DATA(ls_transport).
+
+        ASSIGN lt_existing_transport[ WricefUUID      = ls_wricef_master-WricefUUID
+                                      TransportNumber = ls_transport-transport_number ]
+          TO FIELD-SYMBOL(<lfs_existing>).
+
+        IF sy-subrc = 0.
+          " TR มีอยู่แล้ว -> อัปเดตข้อมูลให้ตรงกับ TR จริง
+          lv_existing_count += 1.
+          APPEND VALUE #( %tky            = <lfs_existing>-%tky
+                          TransportType   = ls_transport-transport_type
+                          Description     = ls_transport-description
+                          TransportStatus = ls_transport-transport_status
+                          ReleasedOn      = ls_transport-released_on
+                          ImportSequence  = ls_transport-import_sequence ) TO lt_update.
+        ELSE.
+          " TR ยังไม่มี -> สร้างใหม่ใต้ record นี้
+          " %is_draft ต้องตรงกับ record แม่ (active หรือ draft)
+          lv_created_count += 1.
+          APPEND VALUE #( %cid            = |{ ls_wricef_master-WricefID }_{ ls_transport-transport_number }|
+                          %is_draft       = ls_wricef_master-%is_draft
+                          TransportType   = ls_transport-transport_type
+                          TransportNumber = ls_transport-transport_number
+                          Description     = ls_transport-description
+                          TransportStatus = ls_transport-transport_status
+                          ReleasedOn      = ls_transport-released_on
+                          ImportSequence  = ls_transport-import_sequence ) TO ls_create-%target.
+        ENDIF.
+
+      ENDLOOP.
+
+      IF ls_create-%target IS NOT INITIAL.
+        APPEND ls_create TO lt_create.
+      ENDIF.
+
+      " ส่งจำนวนเป็นข้อความ
+      " ถ้าส่งเป็นตัวเลข ค่า 0 จะถูกมองเป็นค่าว่างและไม่แสดงใน message
+      APPEND VALUE #( %tky = ls_wricef_master-%tky
+                      %msg = new_message( id       = 'ZBCWRICEF'
+                                          number   = '008'
+                                          severity = if_abap_behv_message=>severity-success
+                                          v1       = |{ lv_created_count }|
+                                          v2       = ls_wricef_master-WricefID
+                                          v3       = |{ lv_existing_count }| )
+                    ) TO lt_reported.
+
+    ENDLOOP.
+
+    " สร้างและอัปเดตทีเดียวทุก record
+    IF lt_create IS NOT INITIAL OR lt_update IS NOT INITIAL.
+      MODIFY ENTITIES OF zr_w_master IN LOCAL MODE
+        ENTITY WricefMaster
+          CREATE BY \_Transport
+            FIELDS ( TransportType TransportNumber Description TransportStatus ReleasedOn ImportSequence )
+            WITH lt_create
+        ENTITY Transport
+          UPDATE FIELDS ( TransportType Description TransportStatus ReleasedOn ImportSequence )
+            WITH lt_update
+        FAILED   failed
+        REPORTED reported.
+    ENDIF.
+
+    " ใส่ message หลัง MODIFY
+    " เพราะ REPORTED ของ MODIFY จะเขียนทับ reported เดิม
+    APPEND LINES OF lt_reported TO reported-wricefmaster.
+    APPEND LINES OF lt_failed   TO failed-wricefmaster.
+
+    " อ่านกลับมาส่งเป็น result เพื่อให้ UI refresh record นี้
+    READ ENTITIES OF zr_w_master IN LOCAL MODE
+      ENTITY WricefMaster
+        ALL FIELDS WITH CORRESPONDING #( keys )
+      RESULT DATA(lt_wricef).
+
+    result = VALUE #( FOR ls_wricef IN lt_wricef
+                    ( %tky   = ls_wricef-%tky
+                      %param = ls_wricef ) ).
 
   ENDMETHOD.
 

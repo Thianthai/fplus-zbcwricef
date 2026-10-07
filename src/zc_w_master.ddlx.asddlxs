@@ -49,7 +49,8 @@ annotate entity ZC_W_MASTER with
                      { type: #FOR_ACTION, dataAction: 'getWricef', label: 'Get WRICEF' }],
     identification: [{ position: 10 },
                      { type: #FOR_ACTION, dataAction: 'changeStatus', label: 'Change Status' },
-                     { type: #FOR_ACTION, dataAction: 'changePlanFinish', label: 'Change Planned Finish' }],
+                     { type: #FOR_ACTION, dataAction: 'changePlanFinish', label: 'Change Planned Finish' },
+                     { type: #FOR_ACTION, dataAction: 'getTransports', label: 'Get TR' }],
     selectionField: [{ position: 10 }]
   }
   WricefID;

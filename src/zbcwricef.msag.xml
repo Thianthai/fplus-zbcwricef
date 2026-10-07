@@ -50,6 +50,18 @@
      <MSGNR>007</MSGNR>
      <TEXT>Transport requests could not be read</TEXT>
     </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZBCWRICEF</ARBGB>
+     <MSGNR>008</MSGNR>
+     <TEXT>&amp;1 TR created for WRICEF &amp;2, &amp;3 already exist</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZBCWRICEF</ARBGB>
+     <MSGNR>009</MSGNR>
+     <TEXT>No new TR found for WRICEF &amp;1</TEXT>
+    </T100>
    </T100>
   </asx:values>
  </asx:abap>

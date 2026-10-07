@@ -1,6 +1,7 @@
 projection;
 strict ( 2 );
 use draft;
+use side effects;
 
 define behavior for ZC_W_MASTER alias WricefMaster
 {
@@ -11,6 +12,7 @@ define behavior for ZC_W_MASTER alias WricefMaster
   use action changeStatus;
   use action changePlanFinish;
   use action getWricef;
+  use action getTransports;
 
   use action Activate;
   use action Discard;

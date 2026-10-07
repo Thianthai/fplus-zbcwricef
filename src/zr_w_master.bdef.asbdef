@@ -47,6 +47,9 @@ etag master LocalLastChangedAt    //เป็น ETag ระดับ instance �
   //authorization : none = ไม่เช็คสิทธิ์ (ตามที่ตกลงให้อนุญาตทุกอย่าง)
   //result [0..*] $self = คืน record ที่เพิ่งสร้าง เพื่อให้ Fiori Elements refresh list เอง
   static action ( authorization : none ) getWricef result [0..*] $self;
+  //ปุ่ม Get TR ที่ header ของ Object Page: ดึง TR ที่มีรหัส WRICEF ของ record นี้เข้า tab Transports
+  //authorization : none = ไม่เช็คสิทธิ์ (ตามที่ตกลงให้อนุญาตทุกอย่าง)
+  action ( authorization : none ) getTransports result [1] $self;
 
   draft action Activate optimized;
   draft action Discard;
@@ -63,6 +66,12 @@ etag master LocalLastChangedAt    //เป็น ETag ระดับ instance �
   association _Owner     { create; with draft; }
   association _Object    { create; with draft; }
   association _Transport { create; with draft; }
+
+  //หลังกด Get TR ให้ Fiori Elements โหลด tab Transports และ message ใหม่เอง
+  side effects
+  {
+    action getTransports affects entity _Transport, messages;
+  }
 }
 
 define behavior for ZI_W_OWNER alias Owner

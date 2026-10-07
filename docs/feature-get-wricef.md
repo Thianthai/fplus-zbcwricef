@@ -25,6 +25,22 @@
 - รหัสเดียวกันจากหลาย TR (หรือมี/ไม่มี Z) → สร้างครั้งเดียว
 - อ่าน TR ทุกสถานะ (D และ R)
 
+## ตรวจ TR ที่มี pattern แต่ไม่ถูกดึง (2026-10-07 · ข้อมูลจาก `ZCL_W_TR_LIST`)
+
+- TR ทั้งหมด 206 · ตัด Owner `SAP*` (31) เหลือ 175 · ดึงรหัสได้ 44
+- มี pattern `ZAABNNN` / `AABNNN` แต่ไม่ถูกดึง 6 TR — ทุกตัวไม่มี `AB:` / `ABAP:` นำหน้า เป็น Customizing ของ functional (ผู้ใช้ยืนยันจาก Owner ครบทั้ง 4 คน)
+
+| TR | Description | รหัส |
+|---|---|---|
+| IA5K900187 | `[Rocket] MM ZPARAM Program IME007` | IME007 |
+| IA5K900191 | `[Rocket] PM ZPARAM Program PMF001` | PMF001 |
+| IA5K900193 | `Rocket-MMPU: PUF001_Maintain ZPARAM` | PUF001 (ติด `_` regex ปัจจุบันจับไม่ได้อยู่แล้ว) |
+| IA5K900195 | `Rocket-MMPU: PUE001_ZPARAM Change End date` | PUE001 (ติด `_`) |
+| IA5K900357 | `Maintain Parameter for ZPPE002 Goods Issue to Fin` | PPE002 |
+| IA5K900402 | `[Rocket] MM ZPARAM Program IME001` | IME001 |
+
+**ข้อสรุป: คงกฎเดิม** (ดึงเฉพาะ `AB:` / `ABAP:`) · TR ของ functional ให้ user เพิ่มเองด้วยมือ
+
 ## Object (confirm 2026-10-07)
 
 | Object | ประเภท | หมายเหตุ |

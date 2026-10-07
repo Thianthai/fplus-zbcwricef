@@ -5,7 +5,7 @@
 - source 4 ไฟล์ตรงกับที่ส่งให้: DDLX `ZC_W_MASTER`, `ZCL_W_VH_GEN`, BDEF `ZR_W_MASTER`, `ZBP_R_W_MASTER` (ต่างแค่บรรทัดว่าง)
 - `ZD_W_TYPE` เปลี่ยนเป็น CHAR 1 (`LENG` / `OUTPUTLEN` = 1) · ไฟล์ table ไม่เปลี่ยน เพราะอ้างผ่าน data element
 - grep `ricefw` ทุก case: ไม่พบ · ไม่มีไฟล์อื่นเปลี่ยน
-- ⏳ รอผลทดสอบใน Preview (ดู [change-list-report-wricef-type.md](change-list-report-wricef-type.md))
+- ✅ ผู้ใช้ทดสอบใน Preview ผ่านทั้งหมด (ดู [change-list-report-wricef-type.md](change-list-report-wricef-type.md))
 - **ผลรวม: ผ่าน**
 
 ## รอบที่ 12 — 2026-10-07 · `ZCL_W_TR_LIST` เหลือ output ชุดเดียว (commit `50ea112`)

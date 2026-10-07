@@ -1,6 +1,6 @@
 # Change — List Report columns · WRICEF Type W/R/I/C/E/F · เลิก default OPN
 
-สถานะ: ✅ อยู่บน repo แล้ว (commit `d41dac8`) · ⏳ รอผลทดสอบใน Preview
+สถานะ: ✅ ทดสอบใน Preview ผ่านทั้งหมด (commit `d41dac8` · ผู้ใช้ยืนยัน 2026-10-07)
 
 ## คำขอ (ผู้ใช้ 2026-10-07)
 
@@ -38,3 +38,12 @@
 | `ZCL_W_VH_GEN` | `load_wricef_type` -> W/R/I/C/E/F |
 | BDEF `ZR_W_MASTER` | `determination setWricefType on modify { create; field WricefID; }` |
 | `ZBP_R_W_MASTER` | `setInitialStatus` -> ค่าว่าง · เพิ่ม `setWricefType` · `getWricef` เติม type ให้ record เดิมที่ type ว่าง |
+
+## ผลทดสอบใน Preview (ผู้ใช้ยืนยัน 2026-10-07)
+
+| ทดสอบ | ผล |
+|---|---|
+| ลำดับคอลัมน์ List Report + ซ่อน Delivery Type (filter ยังอยู่) | ✅ |
+| Get WRICEF เติม type ให้ record เดิม | ✅ |
+| record ใหม่จาก Get WRICEF มี type + Overall Status ว่าง | ✅ |
+| สร้างเอง: พิมพ์ WRICEF ID แล้ว type ขึ้นเอง | ✅ |

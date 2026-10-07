@@ -1,5 +1,14 @@
 # Review Log — ZBCWRICEF
 
+## รอบที่ 10 — 2026-10-07 · Get TR (commit `e5505ff`)
+
+- source 5 ไฟล์ตรงกับที่ส่งให้: `ZCL_W_TR_READER`, BDEF `ZR_W_MASTER` / `ZC_W_MASTER`, DDLX `ZC_W_MASTER`, `ZBP_R_W_MASTER` (ต่างแค่บรรทัดว่าง 1 บรรทัด)
+- `ZBCWRICEF` เพิ่ม message 008–009 ข้อความตรงตามที่ confirm
+- grep `ricefw` ทุก case: ไม่พบ · ไม่มีไฟล์อื่นเปลี่ยน
+- ผลทดสอบใน Preview ผ่านทุกข้อ (ดู [feature-get-tr.md](feature-get-tr.md)) · side effects refresh tab Transports ได้
+- OQ2 / OQ4 ปิด · OQ1 / OQ3 รอเฟสแอป Fiori · D1–D5 พักไว้ · D6 utility ทดสอบยังอยู่ (ผู้ใช้สั่งคงไว้)
+- **ผลรวม: ผ่าน**
+
 ## รอบที่ 9 — 2026-10-07 · OQ1 ทางเลือก ก + fix message 005 + test utility (commit `688fe7e`)
 
 - source 3 ไฟล์ตรงกับที่ส่งให้ทุกบรรทัด: BDEF `ZR_W_MASTER`, `ZBP_R_W_MASTER` (Local Types), `ZCL_W_TR_READER`

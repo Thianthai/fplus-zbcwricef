@@ -55,6 +55,15 @@ CLASS zcl_w_tr_reader DEFINITION
       IMPORTING iv_wricef_id        TYPE ty_wricef_id
       RETURNING VALUE(rt_transport) TYPE tt_transport.
 
+
+    "! แยกรหัส WRICEF ทั้งหมดจาก description ของ TR หนึ่งตัว
+    "! public เพื่อให้ ZCL_W_TR_LIST ใช้กฎเดียวกัน
+    "! @parameter iv_description | description ของ TR
+    "! @parameter rt_wricef_id   | รหัสที่เจอ ถ้าไม่ขึ้นต้นด้วย AB: หรือ ABAP: จะได้ table ว่าง
+    METHODS extract_wricef_ids
+      IMPORTING iv_description      TYPE csequence
+      RETURNING VALUE(rt_wricef_id) TYPE tt_wricef_id.
+
   PROTECTED SECTION.
   PRIVATE SECTION.
 
@@ -65,13 +74,6 @@ CLASS zcl_w_tr_reader DEFINITION
       "! รหัส WRICEF รูปแบบ ZAABNNN หรือ AABNNN
       "! group 1 คือ AABNNN ที่ไม่รวม Z นำหน้า
       gc_code_regex   TYPE string VALUE `\bZ?([A-Z]{3}\d{3})\b`.
-
-    "! แยกรหัส WRICEF ทั้งหมดจาก description ของ TR หนึ่งตัว
-    "! @parameter iv_description | description ของ TR
-    "! @parameter rt_wricef_id   | รหัสที่เจอ ถ้าไม่ขึ้นต้นด้วย AB: หรือ ABAP: จะได้ table ว่าง
-    METHODS extract_wricef_ids
-      IMPORTING iv_description      TYPE csequence
-      RETURNING VALUE(rt_wricef_id) TYPE tt_wricef_id.
 
     "! utility ทดสอบ ลบก่อน handover
     "! ลบข้อมูล WRICEF ทั้งหมดทั้ง active และ draft ของทั้ง 4 entity

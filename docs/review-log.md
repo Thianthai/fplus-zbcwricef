@@ -1,5 +1,31 @@
 # Review Log — ZBCWRICEF
 
+## รอบที่ 5 — 2026-10-07 · ตรวจ push (commit `4b33219`)
+
+- `ZUI_W_MASTER` description + `@EndUserText.label` -> `WRICEF Master - UI Service`
+- `ZUI_W_MASTER_O4` description -> `WRICEF Master - UI Service (OData V4)`
+- `ZCL_W_VH_GEN` (description `WRICEF Master - Value Help Generator`) ตรงกับฉบับแก้รอบที่ 4 ทุกข้อ
+  - อ้างตาราง `ZTBC_W_*_VH` / `_VHT` ครบ 14 ตัว และมีอยู่จริงใน repo ทุกตัว
+  - ไม่มี `ricefw` / `yricefw` · ไม่มี `·` / `→` ใน comment · มี ABAP Doc ครบ
+  - จำนวน code: type 6 · delivery 2 (REM comment ไว้) · status 10 · role 4 · object type 78 (active 34) · transport type 4 · transport status 4
+- ไม่มีไฟล์อื่นเปลี่ยน
+- **ผลรวม: ผ่าน**
+
+## รอบที่ 4 — 2026-10-07 · `ZCL_W_VH_GEN` (ก่อน push · ผู้ใช้ส่ง source มาทางไฟล์)
+
+| # | ปัญหา | แก้ |
+|---|---|---|
+| 1 | อ้างตาราง `YRICEFW_*_VH` / `_VHT` ทั้ง 7 คู่ | เปลี่ยนเป็น `ZTBC_W_TYPE/DTYPE/OSTAT/ROLE/OTYPE/TTYPE/TSTAT_VH` / `_VHT` |
+| 2 | `load_ricefw_type`, field `ricefw_type`, ข้อความ header `RICEFW` | `load_wricef_type`, `wricef_type`, `WRICEF` |
+| 3 | comment ใช้ `·` คั่น 3 จุด | แตกเป็นบรรทัดละเรื่อง |
+| 4 | ไม่มี ABAP Doc | เพิ่มให้ class / types / constants / ทุก method (แยก `METHODS:` chain) |
+| 5 | `sort_order` ของ object type อ่าน `sy-tabix` ระหว่าง `INSERT` | เก็บลง `lv_sort_order` ตั้งแต่ต้น loop |
+
+ข้อตกลงกับผู้ใช้:
+- บรรทัด `REM` (Remediate) ที่ comment ไว้ → คงไว้ ยังไม่ใช้ แต่ไม่ลบ
+- class นี้ใช้บน Customizing Tenant เท่านั้น ไม่นำขึ้น Test/Production
+
+
 ## รอบที่ 3 — 2026-10-07 · เฟส Service (commit `313a947`)
 
 - `ZUI_W_MASTER` expose `WricefMaster`, `Owner`, `Object`, `Transport` ตาม alias ที่ confirm · description ถูกต้อง

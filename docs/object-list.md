@@ -1,6 +1,6 @@
 # Object List — ZBCWRICEF
 
-สถานะอ้างอิงจาก repo (ที่ผู้ใช้ push จาก ADT) · อัปเดตล่าสุด 2026-10-07 (commit `313a947`)
+สถานะอ้างอิงจาก repo (ที่ผู้ใช้ push จาก ADT) · อัปเดตล่าสุด 2026-10-07 (commit `4b33219`)
 
 สัญลักษณ์: ✅ อยู่บน repo แล้ว · ⏳ ยังไม่สร้าง
 
@@ -70,3 +70,4 @@
 |---|---|---|
 | `ZBCWRICEF` | Package | ✅ |
 | `ZBCWRICEF` | Message class (001–004) | ✅ |
+| `ZCL_W_VH_GEN` | Class (`if_oo_adt_classrun`) · โหลดข้อมูล value help ลง `ZTBC_W_*_VH` / `_VHT` · ใช้บน Customizing Tenant เท่านั้น ไม่นำขึ้น Test/Production | ✅ |

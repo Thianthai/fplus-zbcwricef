@@ -1,7 +1,7 @@
 @EndUserText.label: 'WRICEF Master - UI Service'
 define service ZUI_W_MASTER {
   expose ZC_W_MASTER    as WricefMaster;
-  expose ZC_W_OWNER     as Owner;
-  expose ZC_W_OBJECT    as Object;
-  expose ZC_W_TRANSPORT as Transport;
+  expose ZC_W_OWNER     as WricefOwner;
+  expose ZC_W_OBJECT    as WricefObject;
+  expose ZC_W_TRANSPORT as WricefTransport;
 }

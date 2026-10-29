@@ -57,7 +57,7 @@ ENDCLASS.
 
 
 
-CLASS zcl_w_tr_list IMPLEMENTATION.
+CLASS ZCL_W_TR_LIST IMPLEMENTATION.
 
 
   METHOD if_oo_adt_classrun~main.
@@ -164,5 +164,4 @@ CLASS zcl_w_tr_list IMPLEMENTATION.
     ENDLOOP.
 
   ENDMETHOD.
-
 ENDCLASS.

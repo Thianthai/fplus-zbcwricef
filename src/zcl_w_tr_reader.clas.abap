@@ -86,7 +86,7 @@ ENDCLASS.
 
 
 
-CLASS zcl_w_tr_reader IMPLEMENTATION.
+CLASS ZCL_W_TR_READER IMPLEMENTATION.
 
 
   METHOD if_oo_adt_classrun~main.
@@ -265,5 +265,4 @@ CLASS zcl_w_tr_reader IMPLEMENTATION.
     COMMIT WORK.
 
   ENDMETHOD.
-
 ENDCLASS.

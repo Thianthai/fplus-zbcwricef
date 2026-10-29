@@ -2,8 +2,8 @@
 
 @UI: {
   headerInfo: {
-    typeName:       'WRICEF Item',
-    typeNamePlural: 'WRICEF Items',
+    typeName:       'WRICEF Detail',
+    typeNamePlural: 'WRICEF Lists',
     title:       { type: #STANDARD, value: 'WricefID' },
     description: { type: #STANDARD, value: 'Description' }
   },

@@ -1,5 +1,13 @@
 # Review Log — ZBCWRICEF
 
+## รอบที่ 17 — 2026-10-29 · Data Patch `ZCL_W_PATCH` (commit `0e1583c`)
+
+- `ZCL_W_PATCH` ตรงกับที่ส่งให้ทุกบรรทัด · ข้อมูล 62 แถวครบ · description `WRICEF Master - Data Patch` ตรง
+- `ZCL_W_TR_LIST` / `ZCL_W_TR_READER` เปลี่ยนแค่ `CLASS ... IMPLEMENTATION` เป็นตัวพิมพ์ใหญ่ และลบบรรทัดว่างก่อน `ENDCLASS` (ADT serialize ใหม่) · logic ไม่เปลี่ยน
+- grep `ricefw` ทุก case: ไม่พบ
+- รอผล F9 บน tenant (ดู [feature-data-patch.md](feature-data-patch.md))
+- **ผลรวม: ผ่าน (รอผลรัน)**
+
 ## รอบที่ 16 — 2026-10-07 · OQ5 default function (commit `466872c`)
 
 - BDEF `ZC_W_MASTER` เพิ่ม `use function GetDefaultsForChangeDesc;` บรรทัดเดียว ตรงกับที่แจ้ง · ไม่มีไฟล์อื่นเปลี่ยน

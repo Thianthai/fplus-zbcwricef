@@ -34,3 +34,4 @@ Claude ห้ามเขียนไฟล์ ABAP ลง `src/` — ส่ง 
 - [docs/change-list-report-wricef-type.md](docs/change-list-report-wricef-type.md) — คอลัมน์ List Report · WRICEF Type W/R/I/C/E/F · เลิก default OPN
 - [docs/feature-list-owner-progress.md](docs/feature-list-owner-progress.md) — คอลัมน์ Owner / Progress ใน List Report (owner role AB)
 - [docs/feature-change-description.md](docs/feature-change-description.md) — ปุ่ม Change Description · Progress (%) · ปุ่มบน header Object Page
+- [docs/feature-data-patch.md](docs/feature-data-patch.md) — class `ZCL_W_PATCH` patch Description จาก Excel (เฉพาะตัวที่ยังว่าง · รันซ้ำได้)

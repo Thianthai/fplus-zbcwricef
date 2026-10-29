@@ -1,6 +1,6 @@
 # Object List — ZBCWRICEF
 
-สถานะอ้างอิงจาก repo (ที่ผู้ใช้ push จาก ADT) · อัปเดตล่าสุด 2026-10-07 (commit `466872c`)
+สถานะอ้างอิงจาก repo (ที่ผู้ใช้ push จาก ADT) · อัปเดตล่าสุด 2026-10-29 (commit `0e1583c`)
 
 สัญลักษณ์: ✅ อยู่บน repo แล้ว · ⏳ ยังไม่สร้าง
 
@@ -76,4 +76,5 @@
 | `ZBCWRICEF` | Message class (001–010) | ✅ |
 | `ZCL_W_TR_READER` | Class · อ่าน TR + แยกรหัส WRICEF ให้ action `getWricef` และดึง TR ของแต่ละ WRICEF ให้ action `getTransports` (ดู [feature-get-wricef.md](feature-get-wricef.md)) · มี utility ทดสอบ `delete_all_records` ต้องลบก่อน handover (D6) | ✅ |
 | `ZCL_W_TR_LIST` | Class (`if_oo_adt_classrun`) · `WRICEF Master - Transport List` · F9 แสดง TR ทั้งหมดใน console เป็นบรรทัดคั่น tab ไว้ copy ไป Excel · อ่านอย่างเดียว · ใช้ `extract_wricef_ids` ของ `ZCL_W_TR_READER` (public แล้ว) | ✅ |
+| `ZCL_W_PATCH` | Class (`if_oo_adt_classrun`) · `WRICEF Master - Data Patch` · `patch_description` ใส่ Description ให้ WRICEF ที่ Description ยังว่าง ตามรายการจาก Excel · รันซ้ำได้ (ดู [feature-data-patch.md](feature-data-patch.md)) | ✅ |
 | `ZCL_W_VH_GEN` | Class (`if_oo_adt_classrun`) · โหลดข้อมูล value help ลง `ZTBC_W_*_VH` / `_VHT` · ใช้บน Customizing Tenant เท่านั้น ไม่นำขึ้น Test/Production | ✅ |

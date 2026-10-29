@@ -1,6 +1,6 @@
 # Object List — ZBCWRICEF
 
-สถานะอ้างอิงจาก repo (ที่ผู้ใช้ push จาก ADT) · อัปเดตล่าสุด 2026-10-29 (commit `0e1583c`)
+สถานะอ้างอิงจาก repo (ที่ผู้ใช้ push จาก ADT) · อัปเดตล่าสุด 2026-10-29 (commit `77e9451`)
 
 สัญลักษณ์: ✅ อยู่บน repo แล้ว · ⏳ ยังไม่สร้าง
 
@@ -42,7 +42,7 @@
 | `ZI_W_OWNER` / `ZI_W_OBJECT` / `ZI_W_TRANSPORT` | Child view entity | composition child | ✅ |
 | `ZC_W_MASTER` | Projection (root) | transactional_query | ✅ |
 | `ZC_W_OWNER` / `ZC_W_OBJECT` / `ZC_W_TRANSPORT` | Projection (child) | | ✅ |
-| `ZC_W_MASTER` / `ZC_W_OWNER` / `ZC_W_OBJECT` / `ZC_W_TRANSPORT` | Metadata extension | UI annotation | ✅ |
+| `ZC_W_MASTER` / `ZC_W_OWNER` / `ZC_W_OBJECT` / `ZC_W_TRANSPORT` | Metadata extension | UI annotation · headerInfo `WRICEF Detail` / `WRICEF Lists` | ✅ |
 | `ZI_W_TYPE_VH` · `ZI_W_DTYPE_VH` · `ZI_W_OSTAT_VH` · `ZI_W_OTYPE_VH` · `ZI_W_ROLE_VH` · `ZI_W_TTYPE_VH` · `ZI_W_TSTAT_VH` | Value help | | ✅ |
 | `ZI_W_ABAP_OWNER_FIRST` | CDS view entity | `min( created_at )` ของ owner role AB ต่อ WRICEF | ✅ |
 | `ZI_W_ABAP_OWNER_KEY` | CDS view entity | เลือก owner AB หนึ่งคนต่อ WRICEF (`owner_id` น้อยสุดเมื่อเวลาเท่ากัน) | ✅ |

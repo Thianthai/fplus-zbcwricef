@@ -1,5 +1,12 @@
 # Review Log — ZBCWRICEF
 
+## รอบที่ 18 — 2026-10-29 · ชื่อ header List Report / Object Page (commit `77e9451`)
+
+- DDLX `ZC_W_MASTER` แก้ 2 บรรทัดตรงกับที่ส่งให้: `typeName` `WRICEF Item` -> `WRICEF Detail` · `typeNamePlural` `WRICEF Items` -> `WRICEF Lists`
+- grep `ricefw` ทุก case: ไม่พบ · ไม่มีไฟล์อื่นเปลี่ยน
+- ⏳ รอผู้ใช้ยืนยันใน Preview
+- **ผลรวม: ผ่าน**
+
 ## รอบที่ 17 — 2026-10-29 · Data Patch `ZCL_W_PATCH` (commit `0e1583c`)
 
 - `ZCL_W_PATCH` ตรงกับที่ส่งให้ทุกบรรทัด · ข้อมูล 62 แถวครบ · description `WRICEF Master - Data Patch` ตรง

@@ -1,5 +1,7 @@
 # Feature — Get WRICEF (สร้าง WRICEF จาก Transport Request)
 
+> ปุ่มเปลี่ยนชื่อเป็น **Sync** และ sync TR ของทุก WRICEF ด้วย ตั้งแต่ 2026-11-17 (commit `ad9b5ad`) · ดูหัวข้อ [Sync](#sync-2026-11-17) ท้ายไฟล์
+
 สถานะ: ✅ ทดสอบใน Preview ผ่าน (commit `688fe7e`) · เหลือ OQ1 รอเฟสแอป Fiori
 
 ## เป้าหมาย
@@ -78,3 +80,36 @@ PPE002, PPE003, PUF001, SDE002, SDE003, SDE004, SDF001, SDF002, SDF004, SDF008, 
 | # | คำถาม | สถานะ |
 |---|---|---|
 | OQ1 | หลังกดปุ่ม list ไม่ refresh เอง (ยืนยันใน Preview 2026-10-07) | 🔓 เปิดไว้ — ก. `result [0..*] $self` ลองแล้วไม่ได้ผล · ข. side effects ใช้กับ static action ไม่ได้ · เหลือ ค. `ExtensionAPI.refresh()` ใน controller extension ตอนสร้างแอป Fiori จริง · ระหว่างนี้ให้ user กด Go เอง |
+
+## Sync (2026-11-17)
+
+สถานะ: ✅ อยู่บน repo แล้ว (commit `ad9b5ad`) · ⏳ รอผลทดสอบใน app
+
+### ข้อตกลง (ผู้ใช้ 2026-11-17)
+
+| # | ประเด็น | ข้อสรุป |
+|---|---|---|
+| 1 | label ปุ่ม | `getWricef` (List Report) และ `getTransports` (Object Page) ใช้ `Sync` ทั้งคู่ |
+| 2 | ขอบเขต sync TR ของปุ่มบน List Report | ทุก WRICEF ในตาราง ทั้งตัวใหม่และตัวเดิม |
+| 3 | message | คง 005 / 006 · เพิ่ม 011 `&1 TR created, &2 TR updated` |
+| 4 | WRICEF ที่มี draft ค้าง | ข้ามทั้งการเติม type และ sync TR · แจ้ง 012 `&1 WRICEF skipped (open draft)` (warning) |
+| - | ปุ่ม Sync บน Object Page | ทำงานเหมือน Get TR เดิม ไม่แก้ |
+
+### ออกแบบ
+
+- `ZCL_W_TR_READER->get_all_transports` ถาม XCO 3 ครั้ง (ครั้งละ type) แล้วคืน TR ของทุก WRICEF · `get_transports` เดิมถาม 3 ครั้งต่อ WRICEF จึงไม่ใช้กับทุกตัว
+- import sequence นับแยกต่อ WRICEF ด้วยกฎเดิม
+- `getWricef`: หา record ที่มี draft จาก `ztbc_w_master_d` · TR ของ record ใหม่สร้างใน `MODIFY` เดียวกันโดยอ้าง `%cid_ref`
+- ไม่มี WRICEF ใหม่ก็ยัง sync TR ต่อ (เดิม return หลัง 006)
+- หลังกดบน List Report ยังต้องกด Go เอง (OQ1)
+
+### ผลทดสอบ
+
+| ทดสอบ | ผล |
+|---|---|
+| ชื่อตาราง `WRICEF List (n)` · ปุ่ม `Sync` ทั้ง 2 หน้า | ⏳ |
+| Sync บน List Report -> 005/006 + 011 | ⏳ |
+| WRICEF ใหม่มี TR ใน tab Transports | ⏳ |
+| Sync ซ้ำ -> `0 TR created, n TR updated` | ⏳ |
+| เปิด draft ทิ้งไว้ -> 012 และ record นั้นไม่ถูกแก้ | ⏳ |
+| Sync บน Object Page ทำงานเหมือน Get TR เดิม | ⏳ |

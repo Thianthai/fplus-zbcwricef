@@ -1,5 +1,7 @@
 # Feature — Get TR (ดึง Transport Request ของ WRICEF เข้า tab Transports)
 
+> ปุ่มเปลี่ยน label เป็น **Sync** ตั้งแต่ 2026-11-17 (commit `ad9b5ad`) · logic ไม่เปลี่ยน
+
 สถานะ: ✅ ทดสอบใน Preview ผ่าน · อยู่บน repo แล้ว (commit `e5505ff`) · เหลือ OQ3 รอเฟสแอป Fiori
 
 ## เป้าหมาย (ผู้ใช้สั่ง 2026-10-07)

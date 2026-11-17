@@ -1,6 +1,6 @@
 # Object List — ZBCWRICEF
 
-สถานะอ้างอิงจาก repo (ที่ผู้ใช้ push จาก ADT) · อัปเดตล่าสุด 2026-10-29 (commit `77e9451`)
+สถานะอ้างอิงจาก repo (ที่ผู้ใช้ push จาก ADT) · อัปเดตล่าสุด 2026-10-29 (commit `ad9b5ad`)
 
 สัญลักษณ์: ✅ อยู่บน repo แล้ว · ⏳ ยังไม่สร้าง
 
@@ -42,7 +42,7 @@
 | `ZI_W_OWNER` / `ZI_W_OBJECT` / `ZI_W_TRANSPORT` | Child view entity | composition child | ✅ |
 | `ZC_W_MASTER` | Projection (root) | transactional_query | ✅ |
 | `ZC_W_OWNER` / `ZC_W_OBJECT` / `ZC_W_TRANSPORT` | Projection (child) | | ✅ |
-| `ZC_W_MASTER` / `ZC_W_OWNER` / `ZC_W_OBJECT` / `ZC_W_TRANSPORT` | Metadata extension | UI annotation · headerInfo `WRICEF Detail` / `WRICEF Lists` | ✅ |
+| `ZC_W_MASTER` / `ZC_W_OWNER` / `ZC_W_OBJECT` / `ZC_W_TRANSPORT` | Metadata extension | UI annotation · headerInfo `WRICEF Detail` / `WRICEF List` · ปุ่ม `Sync` (`getWricef` / `getTransports`) | ✅ |
 | `ZI_W_TYPE_VH` · `ZI_W_DTYPE_VH` · `ZI_W_OSTAT_VH` · `ZI_W_OTYPE_VH` · `ZI_W_ROLE_VH` · `ZI_W_TTYPE_VH` · `ZI_W_TSTAT_VH` | Value help | | ✅ |
 | `ZI_W_ABAP_OWNER_FIRST` | CDS view entity | `min( created_at )` ของ owner role AB ต่อ WRICEF | ✅ |
 | `ZI_W_ABAP_OWNER_KEY` | CDS view entity | เลือก owner AB หนึ่งคนต่อ WRICEF (`owner_id` น้อยสุดเมื่อเวลาเท่ากัน) | ✅ |
@@ -73,8 +73,20 @@
 | Object | ประเภท | สถานะ |
 |---|---|---|
 | `ZBCWRICEF` | Package | ✅ |
-| `ZBCWRICEF` | Message class (001–010) | ✅ |
-| `ZCL_W_TR_READER` | Class · อ่าน TR + แยกรหัส WRICEF ให้ action `getWricef` และดึง TR ของแต่ละ WRICEF ให้ action `getTransports` (ดู [feature-get-wricef.md](feature-get-wricef.md)) · มี utility ทดสอบ `delete_all_records` ต้องลบก่อน handover (D6) | ✅ |
+| `ZBCWRICEF` | Message class (001–012) | ✅ |
+| `ZCL_W_TR_READER` | Class · อ่าน TR + แยกรหัส WRICEF ให้ action `getWricef` · `get_transports` (WRICEF เดียว) ให้ action `getTransports` · `get_all_transports` (ทุก WRICEF ใน 3 query) ให้ action `getWricef` (ดู [feature-get-wricef.md](feature-get-wricef.md)) · มี utility ทดสอบ `delete_all_records` ต้องลบก่อน handover (D6) | ✅ |
 | `ZCL_W_TR_LIST` | Class (`if_oo_adt_classrun`) · `WRICEF Master - Transport List` · F9 แสดง TR ทั้งหมดใน console เป็นบรรทัดคั่น tab ไว้ copy ไป Excel · อ่านอย่างเดียว · ใช้ `extract_wricef_ids` ของ `ZCL_W_TR_READER` (public แล้ว) | ✅ |
 | `ZCL_W_PATCH` | Class (`if_oo_adt_classrun`) · `WRICEF Master - Data Patch` · `patch_description` ใส่ Description ให้ WRICEF ที่ Description ยังว่าง ตามรายการจาก Excel · รันซ้ำได้ (ดู [feature-data-patch.md](feature-data-patch.md)) | ✅ |
 | `ZCL_W_VH_GEN` | Class (`if_oo_adt_classrun`) · โหลดข้อมูล value help ลง `ZTBC_W_*_VH` / `_VHT` · ใช้บน Customizing Tenant เท่านั้น ไม่นำขึ้น Test/Production | ✅ |
+
+## Launchpad / IAM
+
+| Object | ประเภท | หน้าที่ | สถานะ |
+|---|---|---|---|
+| `ZBCWRICEF_UI5R` | Launchpad app descriptor item (UIAD) | app `com.fplus.bc.zbcwricef` · Semantic Object `ZBCWRICEF` · action `manage` · tile `WRICEF List` | ✅ |
+| `ZIAM_ZBCWRICEF_EXT` | IAM App (SIA6) | ผูก UI app กับ service `ZUI_W_MASTER_O4` | ✅ |
+| `ZBC_ZBCWRICEF` | Business catalog (SIA1) | catalog ของ app | ✅ |
+| `ZBC_ZBCWRICEF_0001` | Business catalog app assignment (SIA7) | ผูก IAM App เข้า catalog | ✅ |
+
+URL เข้า app ตรง (Customizing Tenant): `https://my442178.s4hana.cloud.sap/ui#ZBCWRICEF-manage`
+· tenant อื่นเปลี่ยนแค่ host · user ต้องมี business role ที่มี catalog `ZBC_ZBCWRICEF`

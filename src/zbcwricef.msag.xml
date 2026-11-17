@@ -68,6 +68,18 @@
      <MSGNR>010</MSGNR>
      <TEXT>Select only one WRICEF to change the description</TEXT>
     </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZBCWRICEF</ARBGB>
+     <MSGNR>011</MSGNR>
+     <TEXT>&amp;1 TR created, &amp;2 TR updated</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZBCWRICEF</ARBGB>
+     <MSGNR>012</MSGNR>
+     <TEXT>&amp;1 WRICEF skipped (open draft)</TEXT>
+    </T100>
    </T100>
   </asx:values>
  </asx:abap>

@@ -3,7 +3,7 @@
 @UI: {
   headerInfo: {
     typeName:       'WRICEF Detail',
-    typeNamePlural: 'WRICEF Lists',
+    typeNamePlural: 'WRICEF List',
     title:       { type: #STANDARD, value: 'WricefID' },
     description: { type: #STANDARD, value: 'Description' }
   },
@@ -48,9 +48,9 @@ annotate entity ZC_W_MASTER with
                        invocationGrouping: #CHANGE_SET },
                      { type: #FOR_ACTION, dataAction: 'changeStatus', label: 'Change Status' },
                      { type: #FOR_ACTION, dataAction: 'changePlanFinish', label: 'Change Planned Finish' },
-                     { type: #FOR_ACTION, dataAction: 'getWricef', label: 'Get WRICEF' }],
+                     { type: #FOR_ACTION, dataAction: 'getWricef', label: 'Sync' }],
     identification: [{ position: 10 },
-                     { type: #FOR_ACTION, dataAction: 'getTransports', label: 'Get TR' }],
+                     { type: #FOR_ACTION, dataAction: 'getTransports', label: 'Sync' }],
     selectionField: [{ position: 10 }]
   }
   WricefID;

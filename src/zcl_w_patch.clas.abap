@@ -33,7 +33,7 @@ ENDCLASS.
 
 
 
-CLASS zcl_w_patch IMPLEMENTATION.
+CLASS ZCL_W_PATCH IMPLEMENTATION.
 
 
   METHOD if_oo_adt_classrun~main.
@@ -180,5 +180,4 @@ CLASS zcl_w_patch IMPLEMENTATION.
     io_out->write( lt_failed_id ).
 
   ENDMETHOD.
-
 ENDCLASS.

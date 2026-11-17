@@ -33,7 +33,17 @@ CLASS zcl_w_tr_reader DEFINITION
         import_sequence  TYPE int2,
       END OF ty_transport,
       "! รายการ TR เรียงตามเลข TR
-      tt_transport TYPE STANDARD TABLE OF ty_transport WITH EMPTY KEY.
+      tt_transport TYPE STANDARD TABLE OF ty_transport WITH EMPTY KEY,
+      "! TR หนึ่งตัวคู่กับรหัส WRICEF หนึ่งตัวที่อยู่ใน description
+      "! TR ที่มีหลายรหัสจะมีหลายแถว แถวละรหัส
+      BEGIN OF ty_wricef_transport,
+        "! รหัส WRICEF รูปแบบ AABNNN
+        wricef_id TYPE ty_wricef_id,
+        "! ข้อมูล TR ลำดับ import นับแยกต่อ WRICEF
+        transport TYPE ty_transport,
+      END OF ty_wricef_transport,
+      "! รายการ TR ของทุก WRICEF เรียงตามรหัส WRICEF และเลข TR
+      tt_wricef_transport TYPE STANDARD TABLE OF ty_wricef_transport WITH EMPTY KEY.
 
     CONSTANTS:
       "! status ของ TR ที่ release แล้ว
@@ -55,6 +65,14 @@ CLASS zcl_w_tr_reader DEFINITION
       IMPORTING iv_wricef_id        TYPE ty_wricef_id
       RETURNING VALUE(rt_transport) TYPE tt_transport.
 
+    "! อ่าน TR ทุกสถานะ (ระดับ request) ของทุก WRICEF ในคราวเดียว
+    "! ได้เฉพาะ TR type Workbench, Customizing และ Transport of Copies
+    "! ถาม XCO ครั้งละ type รวม 3 ครั้ง ไม่ว่าจะมี WRICEF กี่ตัว
+    "! คำนวณลำดับ import แยกต่อ WRICEF ด้วยกฎเดียวกับ get_transports
+    "! ถ้าอ่าน TR ไม่สำเร็จ XCO จะส่ง cx_xco_runtime_exception ออกมา
+    "! @parameter rt_wricef_transport | TR ของทุก WRICEF เรียงตามรหัส WRICEF และเลข TR
+    METHODS get_all_transports
+      RETURNING VALUE(rt_wricef_transport) TYPE tt_wricef_transport.
 
     "! แยกรหัส WRICEF ทั้งหมดจาก description ของ TR หนึ่งตัว
     "! public เพื่อให้ ZCL_W_TR_LIST ใช้กฎเดียวกัน
@@ -198,6 +216,87 @@ CLASS ZCL_W_TR_READER IMPLEMENTATION.
     ENDLOOP.
 
     SORT rt_transport BY transport_number.
+
+  ENDMETHOD.
+
+
+  METHOD get_all_transports.
+
+    " คู่ type ของ TR จาก XCO กับ code ใน value help
+    TYPES:
+      BEGIN OF ty_type_map,
+        type      TYPE REF TO cl_xco_tr_type,
+        type_code TYPE ze_w_transport_type,
+      END OF ty_type_map,
+      tt_type_map TYPE STANDARD TABLE OF ty_type_map WITH EMPTY KEY.
+
+    DATA lv_sequence TYPE int2.
+    DATA lv_last_id  TYPE ty_wricef_id.
+
+    " properties ของ TR ไม่มี type
+    " จึง query แยกทีละ type แล้วรู้ type จากรอบที่เจอ
+    DATA(lt_type_map) = VALUE tt_type_map(
+      ( type = xco_cp_transport=>type->workbench_request   type_code = 'WB' )
+      ( type = xco_cp_transport=>type->customizing_request type_code = 'CUS' )
+      ( type = xco_cp_transport=>type->transport_of_copies type_code = 'TOC' ) ).
+
+    LOOP AT lt_type_map INTO DATA(ls_type_map).
+      DATA(lt_transports) = xco_cp_cts=>transports->where( VALUE #(
+                              ( xco_cp_transport=>filter->request_type( ls_type_map-type ) ) )
+                            )->resolve( xco_cp_transport=>resolution->request ).
+
+      LOOP AT lt_transports INTO DATA(lo_transport).
+        DATA(lo_request)     = lo_transport->get_request( ).
+        DATA(lo_properties)  = lo_request->properties( ).
+        DATA(lv_description) = lo_properties->get_short_description( ).
+
+        " ใช้กฎแยกรหัสเดียวกับ get_wricef_ids
+        " TR ที่ไม่มีรหัส WRICEF -> ข้าม
+        DATA(lt_found_id) = extract_wricef_ids( lv_description ).
+        IF lt_found_id IS INITIAL.
+          CONTINUE.
+        ENDIF.
+
+        DATA(ls_transport) = VALUE ty_transport(
+          transport_number = lo_request->value
+          transport_type   = ls_type_map-type_code
+          transport_status = lo_properties->get_status( )->value
+          description      = lv_description ).
+
+        IF ls_transport-transport_status = gc_status_released.
+          " properties ไม่มีเวลา release
+          " TR ที่ release แล้วจึงใช้ last_changed แทน
+          " last_changed เป็นเวลา UTC -> บวก 7 ชั่วโมงเป็นเวลาไทยก่อนตัดเป็นวันที่
+          DATA(lo_released_local) = lo_properties->get_last_changed( )->add( iv_hour = 7 ).
+          DATA(lv_released_date)  = lo_released_local->date->as( xco_cp_time=>format->abap )->value.
+          ls_transport-released_on = lv_released_date.
+          ls_transport-released_at = lv_released_date && lo_released_local->time->as( xco_cp_time=>format->abap )->value.
+        ENDIF.
+
+        " TR หนึ่งตัวอาจมีหลายรหัส -> เพิ่มแถวละรหัส
+        LOOP AT lt_found_id INTO DATA(lv_found_id).
+          APPEND VALUE #( wricef_id = lv_found_id
+                          transport = ls_transport ) TO rt_wricef_transport.
+        ENDLOOP.
+      ENDLOOP.
+    ENDLOOP.
+
+    " ลำดับ import นับแยกต่อ WRICEF
+    " TR ที่ release แล้วเรียงตามเวลา release -> 1, 2, 3
+    " TR ที่ยังไม่ release เว้นว่าง
+    SORT rt_wricef_transport BY wricef_id transport-released_at transport-transport_number.
+    LOOP AT rt_wricef_transport ASSIGNING FIELD-SYMBOL(<lfs_wricef_transport>).
+      IF <lfs_wricef_transport>-wricef_id <> lv_last_id.
+        lv_last_id  = <lfs_wricef_transport>-wricef_id.
+        lv_sequence = 0.
+      ENDIF.
+      IF <lfs_wricef_transport>-transport-transport_status = gc_status_released.
+        lv_sequence += 1.
+        <lfs_wricef_transport>-transport-import_sequence = lv_sequence.
+      ENDIF.
+    ENDLOOP.
+
+    SORT rt_wricef_transport BY wricef_id transport-transport_number.
 
   ENDMETHOD.
 

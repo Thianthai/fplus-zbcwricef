@@ -324,12 +324,24 @@ CLASS lhc_WricefMaster IMPLEMENTATION.
 
   METHOD getWricef.
 
-    DATA lt_new_id    TYPE zcl_w_tr_reader=>tt_wricef_id.
-    DATA lt_fill_type TYPE TABLE FOR UPDATE zr_w_master\\wricefmaster.
+    DATA lt_new_id        TYPE zcl_w_tr_reader=>tt_wricef_id.
+    DATA lt_fill_type     TYPE TABLE FOR UPDATE zr_w_master\\wricefmaster.
+    DATA lt_read_key      TYPE TABLE FOR READ IMPORT zr_w_master\_transport.
+    DATA lt_create_tr     TYPE TABLE FOR CREATE zr_w_master\_transport.
+    DATA lt_update_tr     TYPE TABLE FOR UPDATE zr_w_master\\transport.
+    DATA ls_create_tr     LIKE LINE OF lt_create_tr.
+    DATA lv_tr_created    TYPE i.
+    DATA lv_tr_updated    TYPE i.
+    DATA lv_skipped_count TYPE i.
 
-    " อ่าน TR ทั้งหมดแล้วแยกรหัส WRICEF ผ่าน class helper
+    DATA(lo_reader) = NEW zcl_w_tr_reader( ).
+
+    " อ่าน TR ผ่าน class helper
+    " lt_wricef_id ใช้สร้าง WRICEF ใหม่
+    " lt_wricef_transport ใช้ sync TR ของทุก WRICEF
     TRY.
-        DATA(lt_wricef_id) = NEW zcl_w_tr_reader( )->get_wricef_ids( ).
+        DATA(lt_wricef_id)        = lo_reader->get_wricef_ids( ).
+        DATA(lt_wricef_transport) = lo_reader->get_all_transports( ).
       CATCH cx_xco_runtime_exception.
         APPEND new_message( id       = 'ZBCWRICEF'
                             number   = '007'
@@ -337,89 +349,186 @@ CLASS lhc_WricefMaster IMPLEMENTATION.
         RETURN.
     ENDTRY.
 
-    " เช็คกับ active data ว่ารหัสไหนมีอยู่แล้ว
-    " เหลือเฉพาะรหัสที่ยังไม่มีไว้ใน lt_new_id
-    IF lt_wricef_id IS NOT INITIAL.
-      SELECT wricef_uuid, wricef_id, wricef_type
-        FROM ztbc_w_master
-        FOR ALL ENTRIES IN @lt_wricef_id
-        WHERE wricef_id = @lt_wricef_id-table_line
-        INTO TABLE @DATA(lt_existing).
+    " WRICEF ทั้งหมดในตาราง (active data)
+    SELECT wricef_uuid, wricef_id, wricef_type
+      FROM ztbc_w_master
+      INTO TABLE @DATA(lt_existing).
 
-      LOOP AT lt_wricef_id INTO DATA(lv_wricef_id).
-        IF NOT line_exists( lt_existing[ wricef_id = lv_wricef_id ] ).
-          INSERT lv_wricef_id INTO TABLE lt_new_id.
-        ENDIF.
-      ENDLOOP.
+    " WRICEF ที่มี draft ค้างอยู่
+    " active record ถูก lock โดย draft จึงข้ามทั้งการเติม type และการ sync TR
+    SELECT wricefuuid
+      FROM ztbc_w_master_d
+      INTO TABLE @DATA(lt_draft).
 
-      " record เดิมที่ WRICEF Type ยังว่าง -> เติม type ให้
+    " รหัสจาก TR ที่ยังไม่มีในตาราง -> สร้างใหม่
+    LOOP AT lt_wricef_id INTO DATA(lv_wricef_id).
+      IF NOT line_exists( lt_existing[ wricef_id = lv_wricef_id ] ).
+        INSERT lv_wricef_id INTO TABLE lt_new_id.
+      ENDIF.
+    ENDLOOP.
+
+    LOOP AT lt_existing INTO DATA(ls_existing).
+      IF line_exists( lt_draft[ wricefuuid = ls_existing-wricef_uuid ] ).
+        lv_skipped_count += 1.
+        CONTINUE.
+      ENDIF.
+
+      " record เดิมที่ WRICEF Type ยังว่างและรหัสเจอใน TR -> เติม type ให้
       " WRICEF ID รูปแบบ AABNNN -> ตัวอักษรที่ 3 คือ WRICEF Type
-      LOOP AT lt_existing INTO DATA(ls_existing) WHERE wricef_type IS INITIAL.
+      IF ls_existing-wricef_type IS INITIAL
+         AND line_exists( lt_wricef_id[ table_line = ls_existing-wricef_id ] ).
         APPEND VALUE #( %is_draft  = if_abap_behv=>mk-off
                         WricefUUID = ls_existing-wricef_uuid
                         WricefType = ls_existing-wricef_id+2(1) ) TO lt_fill_type.
+      ENDIF.
+
+      APPEND VALUE #( %is_draft  = if_abap_behv=>mk-off
+                      WricefUUID = ls_existing-wricef_uuid ) TO lt_read_key.
+    ENDLOOP.
+
+    " อ่าน TR ที่มีอยู่แล้วของ record เดิมผ่าน association
+    " เพื่อได้ %tky ไว้ update
+    IF lt_read_key IS NOT INITIAL.
+      READ ENTITIES OF zr_w_master IN LOCAL MODE
+        ENTITY WricefMaster BY \_Transport
+          FIELDS ( WricefUUID TransportNumber )
+          WITH lt_read_key
+        RESULT DATA(lt_existing_tr).
+    ENDIF.
+
+    " sync TR ของ record เดิม
+    " TR มีอยู่แล้ว -> อัปเดตให้ตรงกับ TR จริง
+    " TR ยังไม่มี -> สร้างใหม่ใต้ record นั้น
+    LOOP AT lt_read_key INTO DATA(ls_read_key).
+      DATA(lv_existing_id) = lt_existing[ wricef_uuid = ls_read_key-WricefUUID ]-wricef_id.
+
+      CLEAR ls_create_tr.
+      ls_create_tr-%tky = ls_read_key-%tky.
+
+      LOOP AT lt_wricef_transport INTO DATA(ls_wricef_transport) WHERE wricef_id = lv_existing_id.
+        ASSIGN lt_existing_tr[ WricefUUID      = ls_read_key-WricefUUID
+                               TransportNumber = ls_wricef_transport-transport-transport_number ]
+          TO FIELD-SYMBOL(<lfs_existing_tr>).
+
+        IF sy-subrc = 0.
+          lv_tr_updated += 1.
+          APPEND VALUE #( %tky            = <lfs_existing_tr>-%tky
+                          TransportType   = ls_wricef_transport-transport-transport_type
+                          Description     = ls_wricef_transport-transport-description
+                          TransportStatus = ls_wricef_transport-transport-transport_status
+                          ReleasedOn      = ls_wricef_transport-transport-released_on
+                          ImportSequence  = ls_wricef_transport-transport-import_sequence ) TO lt_update_tr.
+        ELSE.
+          lv_tr_created += 1.
+          APPEND VALUE #( %cid            = |{ lv_existing_id }_{ ls_wricef_transport-transport-transport_number }|
+                          %is_draft       = if_abap_behv=>mk-off
+                          TransportType   = ls_wricef_transport-transport-transport_type
+                          TransportNumber = ls_wricef_transport-transport-transport_number
+                          Description     = ls_wricef_transport-transport-description
+                          TransportStatus = ls_wricef_transport-transport-transport_status
+                          ReleasedOn      = ls_wricef_transport-transport-released_on
+                          ImportSequence  = ls_wricef_transport-transport-import_sequence ) TO ls_create_tr-%target.
+        ENDIF.
       ENDLOOP.
-    ENDIF.
 
-    IF lt_new_id IS INITIAL AND lt_fill_type IS INITIAL.
-      APPEND new_message( id       = 'ZBCWRICEF'
-                          number   = '006'
-                          severity = if_abap_behv_message=>severity-information ) TO reported-%other.
-      RETURN.
-    ENDIF.
+      IF ls_create_tr-%target IS NOT INITIAL.
+        APPEND ls_create_tr TO lt_create_tr.
+      ENDIF.
+    ENDLOOP.
 
-    " สร้าง record ใหม่และเติม type ให้ record เดิมในคราวเดียว
+    " TR ของ record ใหม่ สร้างพร้อม record แม่ใน MODIFY เดียวกัน
+    " อ้าง record แม่ด้วย %cid_ref ซึ่งคือรหัส WRICEF
+    LOOP AT lt_new_id INTO DATA(lv_new_id).
+      CLEAR ls_create_tr.
+      ls_create_tr-%cid_ref  = lv_new_id.
+      ls_create_tr-%is_draft = if_abap_behv=>mk-off.
+      ls_create_tr-%target   = VALUE #(
+        FOR ls_new_tr IN lt_wricef_transport WHERE ( wricef_id = lv_new_id )
+        ( %cid            = |{ lv_new_id }_{ ls_new_tr-transport-transport_number }|
+          %is_draft       = if_abap_behv=>mk-off
+          TransportType   = ls_new_tr-transport-transport_type
+          TransportNumber = ls_new_tr-transport-transport_number
+          Description     = ls_new_tr-transport-description
+          TransportStatus = ls_new_tr-transport-transport_status
+          ReleasedOn      = ls_new_tr-transport-released_on
+          ImportSequence  = ls_new_tr-transport-import_sequence ) ).
+
+      IF ls_create_tr-%target IS NOT INITIAL.
+        lv_tr_created += lines( ls_create_tr-%target ).
+        APPEND ls_create_tr TO lt_create_tr.
+      ENDIF.
+    ENDLOOP.
+
+    " สร้าง record ใหม่ เติม type และ sync TR ในคราวเดียว
     " เป็น active instance ตรง ๆ ไม่ผ่าน draft
     " record ใหม่ใส่แค่ WricefID ส่วน WricefType ได้จาก determination setWricefType
     " %cid ใช้รหัส WRICEF ได้เลย เพราะใน lt_new_id ไม่มีรหัสซ้ำ
     MODIFY ENTITIES OF zr_w_master IN LOCAL MODE
       ENTITY WricefMaster
         CREATE FIELDS ( WricefID )
-        WITH VALUE #( FOR lv_new_id IN lt_new_id
-                      ( %cid      = lv_new_id
+        WITH VALUE #( FOR lv_create_id IN lt_new_id
+                      ( %cid      = lv_create_id
                         %is_draft = if_abap_behv=>mk-off
-                        WricefID  = lv_new_id ) )
+                        WricefID  = lv_create_id ) )
         UPDATE FIELDS ( WricefType )
         WITH lt_fill_type
+        CREATE BY \_Transport
+          FIELDS ( TransportType TransportNumber Description TransportStatus ReleasedOn ImportSequence )
+          WITH lt_create_tr
+      ENTITY Transport
+        UPDATE FIELDS ( TransportType Description TransportStatus ReleasedOn ImportSequence )
+        WITH lt_update_tr
       MAPPED   DATA(ls_mapped)
       FAILED   failed
       REPORTED reported.
 
-    " ไม่มีรหัสใหม่ มีแค่การเติม type ให้ record เดิม
+    " ใส่ message หลัง MODIFY
+    " เพราะ REPORTED ของ MODIFY จะเขียนทับ reported เดิม
     IF lt_new_id IS INITIAL.
       APPEND new_message( id       = 'ZBCWRICEF'
                           number   = '006'
                           severity = if_abap_behv_message=>severity-information ) TO reported-%other.
-      RETURN.
+    ELSE.
+      " อ่าน record ที่เพิ่งสร้างกลับมาส่งเป็น result
+      READ ENTITIES OF zr_w_master IN LOCAL MODE
+        ENTITY WricefMaster
+          ALL FIELDS WITH VALUE #( FOR ls_created_key IN ls_mapped-wricefmaster
+                                   ( %tky = ls_created_key-%tky ) )
+        RESULT DATA(lt_created).
+
+      " static action ไม่มี key ของ record
+      " result จึงผูกกับ %cid ของการเรียก action แทน
+      LOOP AT keys INTO DATA(ls_key).
+        LOOP AT lt_created INTO DATA(ls_created).
+          APPEND VALUE #( %cid   = ls_key-%cid
+                          %param = ls_created ) TO result.
+        ENDLOOP.
+      ENDLOOP.
+
+      DATA(lv_created_count)  = lines( lt_new_id ).
+      DATA(lv_existing_count) = lines( lt_wricef_id ) - lv_created_count.
+
+      " ส่งจำนวนเป็นข้อความ
+      " ถ้าส่งเป็นตัวเลข ค่า 0 จะถูกมองเป็นค่าว่างและไม่แสดงใน message
+      APPEND new_message( id       = 'ZBCWRICEF'
+                          number   = '005'
+                          severity = if_abap_behv_message=>severity-success
+                          v1       = |{ lv_created_count }|
+                          v2       = |{ lv_existing_count }| ) TO reported-%other.
     ENDIF.
 
-    " อ่าน record ที่เพิ่งสร้างกลับมาส่งเป็น result
-    " เพื่อให้ Fiori Elements รู้ว่ามีข้อมูลใหม่และ refresh list เอง
-    READ ENTITIES OF zr_w_master IN LOCAL MODE
-      ENTITY WricefMaster
-        ALL FIELDS WITH VALUE #( FOR ls_created_key IN ls_mapped-wricefmaster
-                                 ( %tky = ls_created_key-%tky ) )
-      RESULT DATA(lt_created).
-
-    " static action ไม่มี key ของ record
-    " result จึงผูกกับ %cid ของการเรียก action แทน
-    LOOP AT keys INTO DATA(ls_key).
-      LOOP AT lt_created INTO DATA(ls_created).
-        APPEND VALUE #( %cid   = ls_key-%cid
-                        %param = ls_created ) TO result.
-      ENDLOOP.
-    ENDLOOP.
-
-    DATA(lv_created_count)  = lines( lt_new_id ).
-    DATA(lv_existing_count) = lines( lt_wricef_id ) - lv_created_count.
-
-    " ส่งจำนวนเป็นข้อความ
-    " ถ้าส่งเป็นตัวเลข ค่า 0 จะถูกมองเป็นค่าว่างและไม่แสดงใน message
     APPEND new_message( id       = 'ZBCWRICEF'
-                        number   = '005'
+                        number   = '011'
                         severity = if_abap_behv_message=>severity-success
-                        v1       = |{ lv_created_count }|
-                        v2       = |{ lv_existing_count }| ) TO reported-%other.
+                        v1       = |{ lv_tr_created }|
+                        v2       = |{ lv_tr_updated }| ) TO reported-%other.
+
+    IF lv_skipped_count > 0.
+      APPEND new_message( id       = 'ZBCWRICEF'
+                          number   = '012'
+                          severity = if_abap_behv_message=>severity-warning
+                          v1       = |{ lv_skipped_count }| ) TO reported-%other.
+    ENDIF.
 
   ENDMETHOD.
 

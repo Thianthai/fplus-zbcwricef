@@ -14,6 +14,23 @@
 | URL (Customizing Tenant) | `https://my442178.s4hana.cloud.sap/ui#ZBCWRICEF-manage` |
 | Source | folder `ui5/` ใน repo นี้ (ย้ายเข้ามา 2026-11-17) · เปิด VS Code ที่ `ui5/` · ครั้งแรกรัน `npm install` · deploy ด้วย `npm run deploy` |
 
+## เปิด project บน Windows (Parallels)
+
+repo อยู่บน Mac · VS Code รันใน Windows ผ่าน shared folder
+
+| ขั้น | วิธี |
+|---|---|
+| ผูก drive (ครั้งเดียว) | `net use W: \\Mac\Home /persistent:yes` (`Z:` `Y:` `X:` ถูกใช้แล้ว) |
+| เปิด folder | `W:\Claude\projects\fplus\zbcwricef\ui5` (ห้ามเปิดผ่าน `\\Mac\...` หรือ `Z:`) |
+| ติดตั้ง / รัน / deploy | `npm install` · `npm start` · `npm run deploy` ใน terminal `cmd` |
+
+ปัญหาที่เจอ (2026-11-17)
+
+- เปิดผ่าน UNC path `\\Mac\Home\...` -> `cmd` ไม่รองรับ UNC ย้อนไป `C:\Windows` แล้ว `npm install` ได้ EPERM
+- PowerShell -> `npm.ps1` ติด execution policy (ใช้ `npm.cmd` แทนได้ แต่ก็ยังส่งต่อให้ `cmd` จึงติด UNC อยู่ดี)
+- `Z:` ของ Parallels ชี้ `\\Mac\AllFiles` -> เปิด `ui5` ไม่ได้ (0x80004005)
+- `npm install` เตือน vulnerabilities ของ dev tooling -> ไม่ต้อง `npm audit fix --force`
+
 ## สิ่งที่ปรับจาก template (2026-11-17)
 
 | ไฟล์ | แก้อะไร | ผล |

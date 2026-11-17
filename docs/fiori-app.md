@@ -12,6 +12,7 @@
 | Service | `/sap/opu/odata4/sap/zui_w_master_o4/srvd/sap/zui_w_master/0001/` |
 | Launchpad | UIAD `ZBCWRICEF_UI5R` · Semantic Object `ZBCWRICEF` · action `manage` · tile `WRICEF List` |
 | URL (Customizing Tenant) | `https://my442178.s4hana.cloud.sap/ui#ZBCWRICEF-manage` |
+| Deploy | `ui5-deploy.yaml` -> `my442202` (Development tenant) · package `ZBCWRICEF` · TR `IA5K900449` · ผลขึ้นที่ `my442178` (ยืนยัน 2026-11-17) |
 | Source | folder `ui5/` ใน repo นี้ (ย้ายเข้ามา 2026-11-17) · เปิด VS Code ที่ `ui5/` · ครั้งแรกรัน `npm install` · deploy ด้วย `npm run deploy` |
 
 ## เปิด project บน Windows (Parallels)

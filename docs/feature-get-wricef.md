@@ -2,7 +2,7 @@
 
 > ปุ่มเปลี่ยนชื่อเป็น **Sync** และ sync TR ของทุก WRICEF ด้วย ตั้งแต่ 2026-11-17 (commit `ad9b5ad`) · ดูหัวข้อ [Sync](#sync-2026-11-17) ท้ายไฟล์
 
-สถานะ: ✅ ทดสอบใน Preview ผ่าน (commit `688fe7e`) · เหลือ OQ1 รอเฟสแอป Fiori
+สถานะ: ✅ ทดสอบใน Preview ผ่าน (commit `688fe7e`) · OQ1 ปิดแล้ว (side effect ใน UI5 app 2026-11-17)
 
 ## เป้าหมาย
 
@@ -79,7 +79,7 @@ PPE002, PPE003, PUF001, SDE002, SDE003, SDE004, SDF001, SDF002, SDF004, SDF008, 
 
 | # | คำถาม | สถานะ |
 |---|---|---|
-| OQ1 | หลังกดปุ่ม list ไม่ refresh เอง (ยืนยันใน Preview 2026-10-07) | 🔓 เปิดไว้ — ก. `result [0..*] $self` ลองแล้วไม่ได้ผล · ข. side effects ใช้กับ static action ไม่ได้ · เหลือ ค. `ExtensionAPI.refresh()` ใน controller extension ตอนสร้างแอป Fiori จริง · ระหว่างนี้ให้ user กด Go เอง |
+| OQ1 | หลังกดปุ่ม list ไม่ refresh เอง (ยืนยันใน Preview 2026-10-07) | ✅ ปิด 2026-11-17 — ก. `result [0..*] $self` ไม่ได้ผล · ข. side effects ใน BDEF ใช้กับ static action ไม่ได้ · **ทางที่ใช้:** annotation `Common.SideEffects` ใน `annotation.xml` ของ UI5 app target `getWricef(Collection(...))` · `TargetEntities = _it` (ดู [fiori-app.md](fiori-app.md)) · ไม่ต้องใช้ controller extension |
 
 ## Sync (2026-11-17)
 
@@ -101,7 +101,7 @@ PPE002, PPE003, PUF001, SDE002, SDE003, SDE004, SDF001, SDF002, SDF004, SDF008, 
 - import sequence นับแยกต่อ WRICEF ด้วยกฎเดิม
 - `getWricef`: หา record ที่มี draft จาก `ztbc_w_master_d` · TR ของ record ใหม่สร้างใน `MODIFY` เดียวกันโดยอ้าง `%cid_ref`
 - ไม่มี WRICEF ใหม่ก็ยัง sync TR ต่อ (เดิม return หลัง 006)
-- หลังกดบน List Report ยังต้องกด Go เอง (OQ1)
+- ~~หลังกดบน List Report ยังต้องกด Go เอง (OQ1)~~ -> list refresh เองแล้ว (OQ1 ปิด 2026-11-17)
 
 ### ผลทดสอบ
 

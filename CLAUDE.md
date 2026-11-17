@@ -36,3 +36,4 @@ Claude ห้ามเขียนไฟล์ ABAP ลง `src/` — ส่ง 
 - [docs/feature-list-owner-progress.md](docs/feature-list-owner-progress.md) — คอลัมน์ Owner / Progress ใน List Report (owner role AB)
 - [docs/feature-change-description.md](docs/feature-change-description.md) — ปุ่ม Change Description · Progress (%) · ปุ่มบน header Object Page
 - [docs/feature-data-patch.md](docs/feature-data-patch.md) — class `ZCL_W_PATCH` patch Description จาก Excel (เฉพาะตัวที่ยังว่าง · รันซ้ำได้)
+- [docs/fiori-app.md](docs/fiori-app.md) — Fiori app (UI5): ข้อมูล app · URL · สิ่งที่ปรับจาก template (initial load · refresh หลัง Sync)

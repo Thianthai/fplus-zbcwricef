@@ -1,5 +1,11 @@
 # Review Log — ZBCWRICEF
 
+## รอบที่ 20 — 2026-11-17 · Fiori app: initial load + refresh หลัง Sync
+
+- แก้ใน project UI5 ของผู้ใช้ (ไม่อยู่ใน repo): `manifest.json` `initialLoad: Enabled` · `annotation.xml` side effect ของ `getWricef` target `_it`
+- ผู้ใช้ deploy และทดสอบผ่านทั้ง 2 ข้อ -> **ปิด OQ1** (ดู [fiori-app.md](fiori-app.md))
+- **ผลรวม: ผ่าน**
+
 ## รอบที่ 19 — 2026-11-17 · ปุ่ม Sync + Launchpad (commit `ad9b5ad`)
 
 - `ZCL_W_TR_READER` (`get_all_transports` + type), `ZBP_R_W_MASTER->getWricef`, DDLX `ZC_W_MASTER` ตรงกับที่ส่งให้ทุกบรรทัด

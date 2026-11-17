@@ -23,8 +23,12 @@
 | เตรียม commit message สำหรับ push ของผู้ใช้ | Claude |
 | ตรวจ repo ทุกครั้งหลังผู้ใช้ push (`git pull` แล้วรีวิว) | Claude |
 | เอกสาร `README.md` · `CLAUDE.md` · `docs/` + push | Claude |
+| แก้ Fiori app ใน `ui5/` + commit / push | Claude (ผู้ใช้ตกลง) |
+| deploy UI5 (`npm run deploy` ใน `ui5/`) | ผู้ใช้ |
 
 Claude ห้ามเขียนไฟล์ ABAP ลง `src/` — ส่ง code เป็น code block ใน chat เท่านั้น
+
+`ui5/` คือ source ของ Fiori app (abapGit อ่านเฉพาะ `/src/` จึงไม่กระทบ) · `node_modules/` และ `dist/` ไม่เข้า git
 
 ## เอกสาร
 

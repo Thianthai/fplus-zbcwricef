@@ -1,0 +1,33 @@
+{
+  "generationParameters": {
+    "generationDate": "Tue Nov 17 2026 11:08:37 GMT+0700 (Indochina Time)",
+    "generatorPlatform": "Visual Studio Code",
+    "serviceType": "SAP System (ABAP Cloud)",
+    "metadataFilename": "",
+    "serviceUrl": "https://my442178-api.s4hana.cloud.sap/sap/opu/odata4/sap/zui_w_master_o4/srvd/sap/zui_w_master/0001/",
+    "appName": "zbcwricef",
+    "appTitle": "WRICEF Master",
+    "appDescription": "An SAP Fiori application.",
+    "appNamespace": "com.fplus.bc",
+    "ui5Theme": "sap_horizon",
+    "ui5Version": "1.148.12",
+    "enableEslint": true,
+    "enableTypeScript": false,
+    "showMockDataInfo": true,
+    "generatorVersion": "1.31.1",
+    "template": "List Report Page V4",
+    "generatorName": "SAP Fiori Application Generator",
+    "entityRelatedConfig": [
+      {
+        "type": "Main Entity",
+        "value": "WricefMaster"
+      },
+      {
+        "type": "Navigation Entity",
+        "value": "None"
+      }
+    ],
+    "launchText": "To launch the generated application, run the following from the generated application root folder:\n\n```\n    npm start\n```",
+    "valueHelpDownloaded": true
+  }
+}

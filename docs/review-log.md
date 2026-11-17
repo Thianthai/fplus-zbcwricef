@@ -1,5 +1,14 @@
 # Review Log — ZBCWRICEF
 
+## รอบที่ 21 — 2026-11-17 · UI5 เข้า repo + ปิดงานค้าง (commit `fb59474`, `2f6af29`, `511b764`)
+
+- ย้าย project UI5 เข้า folder `ui5/` (abapGit อ่านเฉพาะ `/src/` จึงไม่กระทบ) · ไม่ commit `node_modules` / `dist` / `archive.zip`
+- ผู้ใช้ `npm install` · `npm start` · `npm run deploy` จาก `W:\...\ui5` ผ่าน · deploy ไป `my442202` เห็นผลที่ `my442178`
+- **ปิด OQ3**: ปุ่ม Sync บน Object Page คงไว้ที่ header ไม่ย้ายเข้า tab Transports
+- **ปิด `ZCL_W_PATCH`**: ผู้ใช้รันบน tenant แล้วใช้งานได้
+- ค้าง: D6 ลบ `delete_all_records` ใน `ZCL_W_TR_READER` ก่อน handover · D1–D5 พักไว้
+- **ผลรวม: ผ่าน**
+
 ## รอบที่ 20 — 2026-11-17 · Fiori app: initial load + refresh หลัง Sync
 
 - แก้ใน project UI5 ของผู้ใช้ (ไม่อยู่ใน repo): `manifest.json` `initialLoad: Enabled` · `annotation.xml` side effect ของ `getWricef` target `_it`

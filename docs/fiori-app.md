@@ -57,4 +57,4 @@ repo อยู่บน Mac · VS Code รันใน Windows ผ่าน shar
 
 | # | คำถาม | สถานะ |
 |---|---|---|
-| OQ3 | ปุ่ม Sync (Get TR) อยู่ที่ header ของ Object Page · จะย้ายเข้า tab Transports ไหม | 🔓 ยังไม่ได้คุย |
+| OQ3 | ปุ่ม Sync (Get TR) อยู่ที่ header ของ Object Page · จะย้ายเข้า tab Transports ไหม | ✅ ปิด 2026-11-17: ไม่ย้าย คงไว้ที่ header |

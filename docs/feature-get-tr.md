@@ -2,7 +2,7 @@
 
 > ปุ่มเปลี่ยน label เป็น **Sync** ตั้งแต่ 2026-11-17 (commit `ad9b5ad`) · logic ไม่เปลี่ยน
 
-สถานะ: ✅ ทดสอบใน Preview ผ่าน · อยู่บน repo แล้ว (commit `e5505ff`) · เหลือ OQ3 รอเฟสแอป Fiori
+สถานะ: ✅ ทดสอบใน Preview ผ่าน · อยู่บน repo แล้ว (commit `e5505ff`) · OQ3 ปิดแล้ว (ปุ่มคงไว้ที่ header)
 
 ## เป้าหมาย (ผู้ใช้สั่ง 2026-10-07)
 
@@ -29,7 +29,7 @@
 
 ## ข้อตกลง (ผู้ใช้ 2026-10-07)
 
-- ปุ่มอยู่ที่ header ของ Object Page ไปก่อน (OQ3) -> ย้ายเข้า tab ตอนทำแอป Fiori
+- ปุ่มอยู่ที่ header ของ Object Page (OQ3 ปิด 2026-11-17: ไม่ย้ายเข้า tab)
 - Type: Workbench -> `WB` · Customizing -> `CUS` · Transport of Copies -> `TOC`
 - Status: ได้แค่ `D` / `R` จาก XCO · `I` / `E` user เปลี่ยนเอง
 - TR ที่มีอยู่แล้ว -> **อัปเดต** status / released_on / import_sequence ให้ด้วย
@@ -72,4 +72,4 @@
 |---|---|---|
 | OQ2 | type -> query แยกตาม `request_type` · release -> `last_changed` + 7 ชม. | ✅ ปิด 2026-10-07 — cross check กับ TR จริงใน ADT Transport Organizer: กด release เวลาไทย ~14:32 -> Last Changed แสดง 07:32:20 = UTC · การ +7 ถูกต้อง |
 | OQ4 | `ImportSequence` เป็น INT2 -> ค่าว่างแสดงเป็น `0` บน UI | ✅ ปิด — ผู้ใช้ยอมรับ `0` = ยังไม่ release ไม่ต้องแก้ |
-| OQ3 | ตำแหน่งปุ่ม -> header ไปก่อน · ย้ายเข้า tab Transports ตอนทำแอป Fiori | 🔓 รอเฟสแอป Fiori |
+| OQ3 | ตำแหน่งปุ่ม -> header ไปก่อน · ย้ายเข้า tab Transports ตอนทำแอป Fiori | ✅ ปิด 2026-11-17: ไม่ย้าย คงไว้ที่ header |

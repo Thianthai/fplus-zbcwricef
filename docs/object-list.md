@@ -88,5 +88,6 @@
 | `ZBC_ZBCWRICEF` | Business catalog (SIA1) | catalog ของ app | ✅ |
 | `ZBC_ZBCWRICEF_0001` | Business catalog app assignment (SIA7) | ผูก IAM App เข้า catalog | ✅ |
 
-URL เข้า app ตรง (Customizing Tenant): `https://my442178.s4hana.cloud.sap/ui#ZBCWRICEF-manage`
+URL เข้า app ตรง (Customizing Tenant): `https://my442178.s4hana.cloud.sap/ui#ZBCWRICEF-manage` (ผู้ใช้ยืนยันเปิดได้ 2026-11-17)
+· ต้องมีทั้ง Semantic Object และ action (`#ZBCWRICEF` อย่างเดียวเปิดไม่ได้)
 · tenant อื่นเปลี่ยนแค่ host · user ต้องมี business role ที่มี catalog `ZBC_ZBCWRICEF`

@@ -7,8 +7,8 @@
 - object ใหม่ของ launchpad ที่ผู้ใช้สร้างเอง: UIAD `ZBCWRICEF_UI5R` (`#ZBCWRICEF-manage`), SIA6 `ZIAM_ZBCWRICEF_EXT`, SIA1 `ZBC_ZBCWRICEF`, SIA7 `ZBC_ZBCWRICEF_0001`
 - `ZCL_W_PATCH` เปลี่ยนแค่ `CLASS ... IMPLEMENTATION` เป็นตัวพิมพ์ใหญ่และบรรทัดว่างก่อน `ENDCLASS` (ADT serialize ใหม่)
 - grep `ricefw` ทุก case: ไม่พบ
-- ⏳ รอผลทดสอบใน app (ดู [feature-get-wricef.md](feature-get-wricef.md#sync-2026-11-17))
-- **ผลรวม: ผ่าน (รอผลทดสอบ)**
+- ✅ ผู้ใช้ทดสอบใน app ผ่าน 2026-11-17 (ดู [feature-get-wricef.md](feature-get-wricef.md#sync-2026-11-17))
+- **ผลรวม: ผ่าน**
 
 ## รอบที่ 18 — 2026-10-29 · ชื่อ header List Report / Object Page (commit `77e9451`)
 

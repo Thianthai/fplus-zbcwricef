@@ -83,7 +83,7 @@ PPE002, PPE003, PUF001, SDE002, SDE003, SDE004, SDF001, SDF002, SDF004, SDF008, 
 
 ## Sync (2026-11-17)
 
-สถานะ: ✅ อยู่บน repo แล้ว (commit `ad9b5ad`) · ⏳ รอผลทดสอบใน app
+สถานะ: ✅ ทดสอบใน app ผ่าน (ผู้ใช้ยืนยัน 2026-11-17)
 
 ### ข้อตกลง (ผู้ใช้ 2026-11-17)
 
@@ -107,9 +107,9 @@ PPE002, PPE003, PUF001, SDE002, SDE003, SDE004, SDF001, SDF002, SDF004, SDF008, 
 
 | ทดสอบ | ผล |
 |---|---|
-| ชื่อตาราง `WRICEF List (n)` · ปุ่ม `Sync` ทั้ง 2 หน้า | ⏳ |
-| Sync บน List Report -> 005/006 + 011 | ⏳ |
-| WRICEF ใหม่มี TR ใน tab Transports | ⏳ |
-| Sync ซ้ำ -> `0 TR created, n TR updated` | ⏳ |
-| เปิด draft ทิ้งไว้ -> 012 และ record นั้นไม่ถูกแก้ | ⏳ |
-| Sync บน Object Page ทำงานเหมือน Get TR เดิม | ⏳ |
+| ชื่อตาราง `WRICEF List (n)` · ปุ่ม `Sync` ทั้ง 2 หน้า | ✅ |
+| Sync บน List Report -> 005/006 + 011 | ✅ |
+| WRICEF ใหม่มี TR ใน tab Transports | ✅ |
+| Sync ซ้ำ -> `0 TR created, n TR updated` | ✅ |
+| เปิด draft ทิ้งไว้ -> 012 และ record นั้นไม่ถูกแก้ | ✅ |
+| Sync บน Object Page ทำงานเหมือน Get TR เดิม | ✅ |

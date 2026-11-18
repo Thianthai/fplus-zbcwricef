@@ -36,7 +36,7 @@ annotate entity ZC_W_MASTER with
       label: 'Technical Objects', position: 30, targetElement: '_Object' },
 
     { id: 'TransportFacet', purpose: #STANDARD, type: #LINEITEM_REFERENCE,
-      label: 'Transports', position: 40, targetElement: '_Transport' }
+      label: 'Transports', position: 5, targetElement: '_Transport' }
   ]
 
   @UI.hidden: true

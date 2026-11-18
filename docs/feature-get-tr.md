@@ -30,6 +30,7 @@
 ## ข้อตกลง (ผู้ใช้ 2026-10-07)
 
 - ปุ่มอยู่ที่ header ของ Object Page (OQ3 ปิด 2026-11-17: ไม่ย้ายเข้า tab)
+- tab Transports เป็น tab แรกของ Object Page (position 5 · commit `2b5304a` · 2026-11-18)
 - Type: Workbench -> `WB` · Customizing -> `CUS` · Transport of Copies -> `TOC`
 - Status: ได้แค่ `D` / `R` จาก XCO · `I` / `E` user เปลี่ยนเอง
 - TR ที่มีอยู่แล้ว -> **อัปเดต** status / released_on / import_sequence ให้ด้วย

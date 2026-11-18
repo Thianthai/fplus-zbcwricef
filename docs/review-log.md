@@ -1,5 +1,13 @@
 # Review Log — ZBCWRICEF
 
+## รอบที่ 22 — 2026-11-18 · tab Transports ขึ้นก่อน (commit `2b5304a`)
+
+- DDLX `ZC_W_MASTER`: `TransportFacet` position `40` -> `5` ตรงตามที่ตกลง · ไม่มีไฟล์อื่นเปลี่ยน
+- ลำดับ tab บน Object Page: Transports · General Information · Owners · Technical Objects
+- grep `ricefw` ทุก case: ไม่พบ
+- ⏳ รอผู้ใช้ยืนยันในแอป
+- **ผลรวม: ผ่าน**
+
 ## รอบที่ 21 — 2026-11-17 · UI5 เข้า repo + ปิดงานค้าง (commit `fb59474`, `2f6af29`, `511b764`)
 
 - ย้าย project UI5 เข้า folder `ui5/` (abapGit อ่านเฉพาะ `/src/` จึงไม่กระทบ) · ไม่ commit `node_modules` / `dist` / `archive.zip`
